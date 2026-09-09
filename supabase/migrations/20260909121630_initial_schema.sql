@@ -137,9 +137,12 @@ CREATE POLICY "Students can insert own submissions" ON project_submissions FOR I
 CREATE POLICY "Students can update own submissions" ON project_submissions FOR UPDATE USING (auth.uid() = student_id);
 
 -- Companies can view verified ranks (summaries) but only for domains they hire for
--- For simplicity in phase 1, allow companies to view all verified ranks, or filter by domain in UI
 CREATE POLICY "Companies can view verified ranks" ON verified_ranks FOR SELECT USING (
-  EXISTS (SELECT 1 FROM companies WHERE companies.id = auth.uid())
+  EXISTS (
+    SELECT 1 FROM companies 
+    WHERE companies.id = auth.uid() 
+    AND verified_ranks.domain = ANY(companies.domains_hiring)
+  )
 );
 
 -- Companies can read their own profile
