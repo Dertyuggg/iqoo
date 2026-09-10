@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
+import { createAdminClient } from '@/lib/supabase/server';
 import { verifyGithubRepo } from '@/lib/github-verification';
 
 export async function POST(req: Request) {
@@ -10,7 +10,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Missing submissionId or repoUrl' }, { status: 400 });
     }
 
-    const supabase = await createClient();
+    const supabase = await createAdminClient();
 
     // 1. & 2. Analyze repo and determine outcome
     let verificationResult;
@@ -21,9 +21,9 @@ export async function POST(req: Request) {
       // If we can't verify (e.g. repo not found/private), we flag it for manual review
       verificationResult = {
         overallStatus: 'flagged',
-        timestamp_analysis_result: { passed: false, reason: err.message },
-        commit_message_coherence: { passed: false, reason: err.message },
-        public_repo_diff_result: { passed: false, reason: err.message }
+        timestamp_analysis_result: { passed: false, reason: (err as any).message },
+        commit_message_coherence: { passed: false, reason: (err as any).message },
+        public_repo_diff_result: { passed: false, reason: (err as any).message }
       };
     }
 
@@ -59,6 +59,17 @@ export async function POST(req: Request) {
     if (updateError) {
       console.error('Update status error:', updateError);
       return NextResponse.json({ error: 'Failed to update status' }, { status: 500 });
+    }
+
+    if (newStatus === 'authenticity_checked') {
+      // Fire and forget AI review
+      const url = new URL(req.url);
+      const baseUrl = `${url.protocol}//${url.host}`;
+      fetch(`${baseUrl}/api/submissions/ai-review`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ submissionId, repoUrl }),
+      }).catch(err => console.error('Failed to trigger AI review:', err));
     }
 
     return NextResponse.json({ success: true, status: newStatus, result: verificationResult });

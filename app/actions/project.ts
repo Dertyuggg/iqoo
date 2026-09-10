@@ -3,6 +3,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
+import { headers } from 'next/headers';
 
 export async function submitProject(formData: FormData) {
   const supabase = await createClient();
@@ -41,7 +42,11 @@ export async function submitProject(formData: FormData) {
   // 2. Trigger authenticity check (fire and forget for now, or we can await it if it's fast)
   // We'll await it for the stub so it finishes before redirect, 
   // but Dhyanesh might want to make it a background job later.
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+  
+  const headersList = await headers();
+  const host = headersList.get('host');
+  const protocol = process.env.NODE_ENV === 'development' ? 'http' : 'https';
+  const baseUrl = `${protocol}://${host}`;
   
   try {
     fetch(`${baseUrl}/api/submissions/authenticity-check`, {

@@ -8,6 +8,10 @@ export type Json =
 
 export interface Database {
   public: {
+    CompositeTypes: {}
+    Views: {}
+    Functions: {}
+    Enums: {}
     Tables: {
       students: {
         Row: {
