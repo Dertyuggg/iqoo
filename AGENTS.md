@@ -25,3 +25,13 @@ This repo builds **a verified talent & hiring bridge for Tier-2/Tier-3 college s
 
 ## Source document
 All of the above is derived from `Business_Model_Talent_Platform.pdf`, a strategy/business doc (not a technical spec). It's included in this repo for reference — treat it as intent, and these `.md` files as the operational translation of that intent for coding purposes.
+
+<!-- BEGIN:nextjs-agent-rules -->
+
+# This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
+<!-- END:nextjs-agent-rules -->

@@ -16,7 +16,7 @@ export async function POST(req: Request) {
     let verificationResult;
     try {
       verificationResult = await verifyGithubRepo(repoUrl);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('GitHub Verification Error:', err);
       // If we can't verify (e.g. repo not found/private), we flag it for manual review
       verificationResult = {
