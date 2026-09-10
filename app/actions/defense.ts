@@ -89,6 +89,22 @@ export async function submitDefenseReview(
          .from('project_submissions')
          .update({ status: 'verified' })
          .eq('id', submissionId);
+         
+       // Trigger rank computation now that the submission is verified
+       const { data: submissionData } = await supabaseAdmin
+         .from('project_submissions')
+         .select('student_id, domain')
+         .eq('id', submissionId)
+         .single();
+         
+       if (submissionData && submissionData.student_id) {
+         const { computeAndStoreVerifiedRank } = await import('@/lib/verification/scoring');
+         try {
+           await computeAndStoreVerifiedRank(submissionData.student_id, submissionData.domain);
+         } catch (e) {
+           console.error('Scoring computation failed:', e);
+         }
+       }
     }
   } else {
     // If fail, transition to 'rejected'
