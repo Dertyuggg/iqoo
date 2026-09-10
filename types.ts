@@ -12,6 +12,7 @@ export interface Database {
       students: {
         Row: {
           id: string
+          full_name: string | null
           college: string | null
           domain_interests: string[] | null
           github_connected: boolean | null
@@ -20,6 +21,7 @@ export interface Database {
         }
         Insert: {
           id: string
+          full_name?: string | null
           college?: string | null
           domain_interests?: string[] | null
           github_connected?: boolean | null
@@ -28,6 +30,7 @@ export interface Database {
         }
         Update: {
           id?: string
+          full_name?: string | null
           college?: string | null
           domain_interests?: string[] | null
           github_connected?: boolean | null

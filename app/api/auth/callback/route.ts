@@ -36,6 +36,28 @@ export async function GET(request: Request) {
         }, { onConflict: 'student_id' });
       }
 
+      // Check if user is a company first
+      const { data: company } = await supabase
+        .from('companies')
+        .select('id')
+        .eq('id', session.user.id)
+        .single();
+        
+      if (company) {
+        // User is a company, redirect to shortlist
+        const redirectPath = '/shortlist';
+        const forwardedHost = request.headers.get('x-forwarded-host')
+        const isLocalEnv = process.env.NODE_ENV === 'development'
+        
+        if (isLocalEnv) {
+          return NextResponse.redirect(`${origin}${redirectPath}`)
+        } else if (forwardedHost) {
+          return NextResponse.redirect(`https://${forwardedHost}${redirectPath}`)
+        } else {
+          return NextResponse.redirect(`${origin}${redirectPath}`)
+        }
+      }
+
       // Check if profile is complete (e.g. has college and domain_interests)
       const { data: student } = await supabase
         .from('students')

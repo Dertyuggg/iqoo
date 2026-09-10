@@ -47,5 +47,5 @@ export async function signUpCompanyAction(formData: FormData) {
     throw new Error('Failed to create company profile.');
   }
 
-  redirect('/company-dashboard'); // Redirect to company dashboard (to be built in Step D5)
+  redirect('/shortlist'); // Redirect to company dashboard (built in Step D5)
 }
