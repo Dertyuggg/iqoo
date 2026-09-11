@@ -34,7 +34,7 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser()
 
-  const isAuthPage = request.nextUrl.pathname.startsWith('/login') || request.nextUrl.pathname.startsWith('/company-signup')
+  const isAuthPage = request.nextUrl.pathname.startsWith('/login') || request.nextUrl.pathname.startsWith('/student-login') || request.nextUrl.pathname.startsWith('/company-login') || request.nextUrl.pathname.startsWith('/company-signup')
 
   // List of paths that require authentication.
   // We'll protect everything inside /(student) such as /dashboard, /projects, /assessment, /profile
