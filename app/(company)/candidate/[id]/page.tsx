@@ -376,7 +376,7 @@ export default function CandidateProfileView() {
 </div>
 {/* Heatmap Visualization (SVG Inline Grid) */}
 <div className="w-full overflow-x-auto py-space-xs">
-<svg className="w-full min-w-[580px] h-20 text-surface-container-highest" fill="none" viewbox="0 0 580 80" xmlns="http://www.w3.org/2000/svg">
+<svg className="w-full min-w-[580px] h-20 text-surface-container-highest" fill="none" viewBox="0 0 580 80" xmlns="http://www.w3.org/2000/svg">
 {/* Repeating squares with varying intensity */}
 {/* Group 1 */}
 <g className="fill-current text-on-tertiary-container">
@@ -512,7 +512,7 @@ export default function CandidateProfileView() {
 <div className="flex flex-col gap-space-xs">
 <label className="font-label-sm text-label-sm text-outline uppercase tracking-wider" htmlFor="recruiter-input-note">Add Internal Evaluation Note</label>
 <div className="relative">
-<textarea className="w-full p-space-sm bg-surface-container-low focus:bg-surface-container-lowest rounded-lg font-body-sm text-body-sm text-on-surface placeholder:text-outline outline-none transition-colors resize-none" id="recruiter-input-note" placeholder="Leave private feedback for engineering hiring managers..." rows="2"></textarea>
+<textarea className="w-full p-space-sm bg-surface-container-low focus:bg-surface-container-lowest rounded-lg font-body-sm text-body-sm text-on-surface placeholder:text-outline outline-none transition-colors resize-none" id="recruiter-input-note" placeholder="Leave private feedback for engineering hiring managers..." rows={2}></textarea>
 </div>
 <div className="flex justify-end">
 <button className="px-space-base py-space-xs bg-surface-container-high hover:bg-secondary hover:text-on-secondary text-on-surface rounded-lg font-label-md text-label-md transition-colors cursor-pointer" id="btn-add-note" type="button">
@@ -528,7 +528,7 @@ export default function CandidateProfileView() {
 <span className="font-body-sm text-body-sm text-on-surface-variant">Grant review access to Engineering Directors</span>
 </div>
 <label className="relative inline-flex items-center cursor-pointer">
-<input checked="" className="sr-only peer" id="toggle-hm-access" type="checkbox"/>
+<input checked={true} className="sr-only peer" id="toggle-hm-access" type="checkbox"/>
 <div className="w-11 h-6 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-surface-container-lowest after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-surface-container-lowest after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-secondary"></div>
 </label>
 </div>

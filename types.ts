@@ -6,12 +6,12 @@ export type Json =
   | { [key: string]: Json | undefined }
   | Json[]
 
-export interface Database {
+export type Database = {
   public: {
-    CompositeTypes: {}
-    Views: {}
-    Functions: {}
-    Enums: {}
+    CompositeTypes: { [_ in never]: never }
+    Views: { [_ in never]: never }
+    Functions: { [_ in never]: never }
+    Enums: { [_ in never]: never }
     Tables: {
       students: {
         Row: {
@@ -41,6 +41,7 @@ export interface Database {
           leetcode_connected?: boolean | null
           created_at?: string | null
         }
+          Relationships: []
       }
       activity_events: {
         Row: {
@@ -70,6 +71,7 @@ export interface Database {
           raw_data?: Json | null
           created_at?: string | null
         }
+          Relationships: []
       }
       project_submissions: {
         Row: {
@@ -102,6 +104,7 @@ export interface Database {
           updated_at?: string | null
           description?: string | null
         }
+          Relationships: []
       }
       authenticity_checks: {
         Row: {
@@ -131,6 +134,7 @@ export interface Database {
           overall_status?: string
           created_at?: string | null
         }
+          Relationships: []
       }
       ai_reviews: {
         Row: {
@@ -160,6 +164,7 @@ export interface Database {
           raw_model_output?: Json | null
           created_at?: string | null
         }
+          Relationships: []
       }
       defense_sessions: {
         Row: {
@@ -189,6 +194,7 @@ export interface Database {
           outcome?: string | null
           created_at?: string | null
         }
+          Relationships: []
       }
       verified_ranks: {
         Row: {
@@ -224,6 +230,7 @@ export interface Database {
           total_trust_score?: number | null
           snapshot_timestamp?: string | null
         }
+          Relationships: []
       }
       companies: {
         Row: {
@@ -247,6 +254,7 @@ export interface Database {
           billing_phase?: string | null
           created_at?: string | null
         }
+          Relationships: []
       }
       hires: {
         Row: {
@@ -273,6 +281,7 @@ export interface Database {
           hire_date?: string
           created_at?: string | null
         }
+          Relationships: []
       }
     }
   }

@@ -3,6 +3,8 @@ import { createAdminClient } from '@/lib/supabase/server';
 import { fetchRepoCode } from '@/lib/github-code-fetcher';
 import { GoogleGenAI } from '@google/genai';
 
+export const maxDuration = 60; // Max duration for Vercel Hobby plan
+
 export async function POST(req: Request) {
   try {
     const { submissionId, repoUrl } = await req.json();

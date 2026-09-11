@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import { createAdminClient } from '@/lib/supabase/server';
 import { verifyGithubRepo } from '@/lib/github-verification';
 
+export const maxDuration = 60;
+
 export async function POST(req: Request) {
   try {
     const { submissionId, repoUrl } = await req.json();
