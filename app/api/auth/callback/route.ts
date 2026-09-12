@@ -12,9 +12,9 @@ export async function GET(request: Request) {
   const isLocalEnv = process.env.NODE_ENV === 'development'
   
   let baseUrl = origin
-  if (!isLocalEnv && forwardedHost) {
+  if (forwardedHost) {
     baseUrl = `${forwardedProto}://${forwardedHost}`
-  } else if (!isLocalEnv && process.env.NEXT_PUBLIC_SITE_URL) {
+  } else if (process.env.NEXT_PUBLIC_SITE_URL) {
     baseUrl = process.env.NEXT_PUBLIC_SITE_URL
   }
 
