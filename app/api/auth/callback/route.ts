@@ -6,6 +6,18 @@ export async function GET(request: Request) {
   const code = searchParams.get('code')
   const next = searchParams.get('next') ?? '/dashboard'
 
+  // Determine the correct base URL for redirects (handles proxies/deployments)
+  const forwardedHost = request.headers.get('x-forwarded-host')
+  const forwardedProto = request.headers.get('x-forwarded-proto') || 'https'
+  const isLocalEnv = process.env.NODE_ENV === 'development'
+  
+  let baseUrl = origin
+  if (!isLocalEnv && forwardedHost) {
+    baseUrl = `${forwardedProto}://${forwardedHost}`
+  } else if (!isLocalEnv && process.env.NEXT_PUBLIC_SITE_URL) {
+    baseUrl = process.env.NEXT_PUBLIC_SITE_URL
+  }
+
   if (code) {
     const supabase = await createClient()
     const { data: { session }, error } = await supabase.auth.exchangeCodeForSession(code)
@@ -45,17 +57,7 @@ export async function GET(request: Request) {
         
       if (company) {
         // User is a company, redirect to shortlist
-        const redirectPath = '/shortlist';
-        const forwardedHost = request.headers.get('x-forwarded-host')
-        const isLocalEnv = process.env.NODE_ENV === 'development'
-        
-        if (isLocalEnv) {
-          return NextResponse.redirect(`${origin}${redirectPath}`)
-        } else if (forwardedHost) {
-          return NextResponse.redirect(`https://${forwardedHost}${redirectPath}`)
-        } else {
-          return NextResponse.redirect(`${origin}${redirectPath}`)
-        }
+        return NextResponse.redirect(`${baseUrl}/shortlist`)
       }
 
       // Check if profile is complete (e.g. has college and domain_interests)
@@ -66,22 +68,13 @@ export async function GET(request: Request) {
         .single();
         
       if (!student || !student.college || !student.domain_interests || student.domain_interests.length === 0) {
-        return NextResponse.redirect(`${origin}/profile/setup`)
+        return NextResponse.redirect(`${baseUrl}/profile/setup`)
       }
 
-      const forwardedHost = request.headers.get('x-forwarded-host')
-      const isLocalEnv = process.env.NODE_ENV === 'development'
-      
-      if (isLocalEnv) {
-        return NextResponse.redirect(`${origin}${next}`)
-      } else if (forwardedHost) {
-        return NextResponse.redirect(`https://${forwardedHost}${next}`)
-      } else {
-        return NextResponse.redirect(`${origin}${next}`)
-      }
+      return NextResponse.redirect(`${baseUrl}${next}`)
     }
   }
 
   // return the user to an error page with instructions
-  return NextResponse.redirect(`${origin}/login?error=Could not authenticate user`)
+  return NextResponse.redirect(`${baseUrl}/login?error=Could not authenticate user`)
 }
