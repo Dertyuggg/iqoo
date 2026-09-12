@@ -4,45 +4,35 @@ import { useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import Image from 'next/image';
 
-export default function LoginPage() {
+export default function CompanyLoginPage() {
   const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState<React.ReactNode>('');
   const supabase = createClient();
   const router = useRouter();
-
-  const handleGitHubLogin = async () => {
-    setLoading(true);
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'github',
-      options: {
-        redirectTo: `${window.location.origin}/api/auth/callback`,
-        scopes: 'read:user repo',
-      },
-    });
-
-    if (error) {
-      setMessage(error.message);
-      setLoading(false);
-    }
-  };
 
   const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    const { error } = await supabase.auth.signInWithOtp({
+    const { error } = await supabase.auth.signInWithPassword({
       email,
-      options: {
-        emailRedirectTo: `${window.location.origin}/api/auth/callback`,
-      },
+      password,
     });
 
     if (error) {
-      setMessage(error.message);
+      if (error.message.includes('Invalid login credentials')) {
+        setMessage(
+          <span>
+            Account not found or incorrect password. <Link href="/company-signup" className="underline font-bold">Register instead</Link>
+          </span>
+        );
+      } else {
+        setMessage(error.message);
+      }
     } else {
-      setMessage('Check your email for the login link!');
+      router.push('/dashboard');
     }
     setLoading(false);
   };
@@ -110,18 +100,16 @@ export default function LoginPage() {
           </div>
 
           {message && (
-            <div className="p-space-sm rounded-xl bg-surface-container-high text-on-surface font-body-sm text-body-sm text-center shadow-sm" role="alert">
+            <div className="p-space-sm rounded-xl bg-error-container text-on-error-container font-body-sm text-body-sm text-center shadow-sm" role="alert">
               {message}
             </div>
           )}
 
           <div className="space-y-space-lg">
-
-
             <form onSubmit={handleEmailLogin} className="space-y-space-md">
               <div className="space-y-space-xs">
                 <label htmlFor="email-address" className="font-label-md text-label-md text-on-surface block">
-                  Email Address
+                  Work Email
                 </label>
                 <input
                   id="email-address"
@@ -137,17 +125,38 @@ export default function LoginPage() {
                 />
               </div>
 
+              <div className="space-y-space-xs">
+                <label htmlFor="password" className="font-label-md text-label-md text-on-surface block">
+                  Password
+                </label>
+                <input
+                  id="password"
+                  name="password"
+                  type="password"
+                  autoComplete="current-password"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full px-space-md py-space-sm rounded-xl bg-surface-container-lowest border border-outline-variant text-on-surface font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all placeholder:text-on-surface-variant/50"
+                  placeholder="••••••••"
+                  aria-required="true"
+                />
+              </div>
+
               <button
                 type="submit"
                 disabled={loading}
                 className="w-full flex justify-center py-space-sm px-space-md rounded-xl bg-primary hover:bg-primary-container text-on-primary font-label-lg text-label-lg transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Send Magic Link
+                Sign In
               </button>
             </form>
           </div>
           
           <p className="text-center font-body-sm text-body-sm text-on-surface-variant pt-space-lg">
+            Don't have a company account? <Link href="/company-signup" className="text-primary hover:underline font-semibold">Sign up here</Link>
+          </p>
+          <p className="text-center font-body-sm text-body-sm text-on-surface-variant pt-space-sm">
             Are you a student builder? <Link href="/student-login" className="text-primary hover:underline font-semibold">Log in here</Link>
           </p>
         </div>

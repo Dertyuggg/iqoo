@@ -6,11 +6,12 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 
-export default function LoginPage() {
+export default function StudentSignupPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState<React.ReactNode>('');
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const supabase = createClient();
   const router = useRouter();
 
@@ -25,31 +26,28 @@ export default function LoginPage() {
     });
 
     if (error) {
-      setMessage(error.message);
+      setError(error.message);
       setLoading(false);
     }
   };
 
-  const handleEmailLogin = async (e: React.FormEvent) => {
+  const handleEmailSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    const { error } = await supabase.auth.signInWithPassword({
+    setError('');
+    
+    const { error: signUpError } = await supabase.auth.signUp({
       email,
       password,
+      options: {
+        emailRedirectTo: `${window.location.origin}/api/auth/callback`,
+      },
     });
 
-    if (error) {
-      if (error.message.includes('Invalid login credentials')) {
-        setMessage(
-          <span>
-            Account not found or incorrect password. <Link href="/student-signup" className="underline font-bold">Register instead</Link>
-          </span>
-        );
-      } else {
-        setMessage(error.message);
-      }
+    if (signUpError) {
+      setError(signUpError.message);
     } else {
-      router.push('/dashboard');
+      setSuccess('Account created successfully! Please check your email to verify your account or login directly if email confirmation is disabled.');
     }
     setLoading(false);
   };
@@ -110,15 +108,21 @@ export default function LoginPage() {
           </div>
 
           <div className="space-y-space-xs text-center lg:text-left">
-            <h2 className="font-headline-lg text-headline-lg font-bold text-on-surface">Welcome back</h2>
+            <h2 className="font-headline-lg text-headline-lg font-bold text-on-surface">Create an account</h2>
             <p className="font-body-md text-body-md text-on-surface-variant">
-              Log in to your student account.
+              Join the verified talent pool today.
             </p>
           </div>
 
-          {message && (
+          {error && (
             <div className="p-space-sm rounded-xl bg-error-container text-on-error-container font-body-sm text-body-sm text-center shadow-sm" role="alert">
-              {message}
+              {error}
+            </div>
+          )}
+
+          {success && (
+            <div className="p-space-sm rounded-xl bg-primary-container text-on-primary-container font-body-sm text-body-sm text-center shadow-sm" role="alert">
+              {success}
             </div>
           )}
 
@@ -157,12 +161,12 @@ export default function LoginPage() {
             <div className="relative flex items-center">
               <div className="flex-grow border-t border-outline-variant/50"></div>
               <span className="shrink-0 px-space-sm text-on-surface-variant font-body-sm text-body-sm">
-                Or sign in with email
+                Or sign up with email
               </span>
               <div className="flex-grow border-t border-outline-variant/50"></div>
             </div>
 
-            <form onSubmit={handleEmailLogin} className="space-y-space-md">
+            <form onSubmit={handleEmailSignup} className="space-y-space-md">
               <div className="space-y-space-xs">
                 <label htmlFor="email-address" className="font-label-md text-label-md text-on-surface block">
                   Email Address
@@ -189,7 +193,7 @@ export default function LoginPage() {
                   id="password"
                   name="password"
                   type="password"
-                  autoComplete="current-password"
+                  autoComplete="new-password"
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -204,16 +208,13 @@ export default function LoginPage() {
                 disabled={loading}
                 className="w-full flex justify-center py-space-sm px-space-md rounded-xl bg-primary hover:bg-primary-container text-on-primary font-label-lg text-label-lg transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Sign In
+                Create Account
               </button>
             </form>
           </div>
           
           <p className="text-center font-body-sm text-body-sm text-on-surface-variant pt-space-lg">
-            Don't have an account? <Link href="/student-signup" className="text-primary hover:underline font-semibold">Sign up here</Link>
-          </p>
-          <p className="text-center font-body-sm text-body-sm text-on-surface-variant pt-space-sm">
-            Hiring partner? <Link href="/company-login" className="text-primary hover:underline font-semibold">Log in here</Link>
+            Already have an account? <Link href="/student-login" className="text-primary hover:underline font-semibold">Log in</Link>
           </p>
         </div>
       </section>
