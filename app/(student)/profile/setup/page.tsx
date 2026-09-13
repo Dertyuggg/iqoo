@@ -1,7 +1,16 @@
 import Link from 'next/link';
 import Navbar from '@/components/Navbar';
 
-export default function StudentProfilePage() {
+import { createClient } from '@/lib/supabase/server';
+
+export default async function StudentProfilePage() {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  const { data: student } = user ? await supabase.from('students').select('*').eq('id', user.id).single() : { data: null };
+  const fullName = student?.full_name || user?.user_metadata?.full_name || 'Anonymous User';
+  const avatarUrl = user?.user_metadata?.avatar_url || 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + encodeURIComponent(fullName);
+  const collegeName = student?.college || 'Government Engineering College, Bilaspur (Tier-3 College)';
+
   return (
     <>
       <Navbar activePath="/profile/setup" />
@@ -23,7 +32,7 @@ export default function StudentProfilePage() {
 {/* Portrait Container with Elevated Ring */}
 <div className="relative shrink-0">
 <div className="w-32 h-32 lg:w-40 lg:h-40 rounded-full p-1 bg-surface-container-lowest shadow-md ring-4 ring-primary/10">
-<img alt="Ananya Sharma" className="w-full h-full object-cover rounded-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAW3-9fqTZ98W61Z_Op-WXUHNscW_846wSe72SzOb9vFDaddtb04FrBBOoqbnSec84KyrdGT63zntEioS3_HIcPHIAvlpXZ9DeHcXLT_7NcNOl0ZIp0qDW5PeFjkq0xSID6mnJOfe7z7Hpgw4Ns9dwcAsXo8PdNgok4djd-7LJmkJg4eaUoanyurHknFr18OHTz284m_1o4wShIK5wN-XyKY0pK8gZhwg2FFxmbKwYIiIAVGDM2rhji9g"/>
+<img alt={fullName} className="w-full h-full object-cover rounded-full" src={avatarUrl}/>
 </div>
 {/* Verified Shield Floating Marker */}
 <div className="absolute bottom-1 right-1 bg-primary text-on-primary rounded-full p-1.5 shadow-md flex items-center justify-center">
@@ -45,7 +54,7 @@ export default function StudentProfilePage() {
 </div>
 {/* Name & Verification Badge */}
 <div className="flex flex-wrap items-center gap-space-xs">
-<h1 className="font-headline-lg text-headline-lg text-on-surface font-extrabold tracking-tight">Ananya Sharma</h1>
+<h1 className="font-headline-lg text-headline-lg text-on-surface font-extrabold tracking-tight">{fullName}</h1>
 <span className="material-symbols-outlined text-primary text-headline-sm" style={{fontVariationSettings:'"FILL" 1'}} title="Verified Proof-of-Work Credential">publish</span>
 </div>
 {/* Headline / Tagline */}
@@ -56,7 +65,7 @@ export default function StudentProfilePage() {
 <div className="flex flex-wrap items-center gap-y-1 gap-x-space-md text-on-surface-variant font-body-sm text-body-sm pt-1">
 <span className="flex items-center gap-1">
 <span className="material-symbols-outlined text-base text-primary">school</span>
-              B.Tech in Computer Science '25 • Government Engineering College, Bilaspur (Tier-3 College)
+              B.Tech in Computer Science '25 • {collegeName}
             </span>
 <span className="flex items-center gap-1">
 <span className="material-symbols-outlined text-base text-secondary">location_on</span>
@@ -219,7 +228,7 @@ export default function StudentProfilePage() {
 <span className="material-symbols-outlined text-secondary text-headline-lg shrink-0">format_quote</span>
 <div className="flex-1 flex flex-col gap-space-xs">
 <blockquote className="font-body-lg text-body-lg text-on-surface font-medium italic">
-                    “Ananya writes remarkably clean modular TypeScript and Go with exceptional error boundary handling. Her distributed cache implementation showed production-grade awareness of concurrency race conditions. Top tier engineering instincts.”
+                    “{fullName} writes remarkably clean modular TypeScript and Go with exceptional error boundary handling. Her distributed cache implementation showed production-grade awareness of concurrency race conditions. Top tier engineering instincts.”
                   </blockquote>
 <div className="flex flex-wrap items-center justify-between gap-space-xs pt-space-xs">
 <div>

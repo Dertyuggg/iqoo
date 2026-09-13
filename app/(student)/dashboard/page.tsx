@@ -1,7 +1,15 @@
 import Link from 'next/link';
 import Navbar from '@/components/Navbar';
 
-export default function StudentDashboardPage() {
+import { createClient } from '@/lib/supabase/server';
+
+export default async function StudentDashboardPage() {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  const { data: student } = user ? await supabase.from('students').select('*').eq('id', user.id).single() : { data: null };
+  const fullName = student?.full_name || user?.user_metadata?.full_name || 'Anonymous User';
+  const firstName = fullName.split(' ')[0];
+
   return (
     <>
       <Navbar activePath="/dashboard" />
@@ -17,7 +25,7 @@ export default function StudentDashboardPage() {
 <span className="material-symbols-outlined text-[16px]">bolt</span> Momentum Surge
           </div>
 <h1 className="font-headline-lg text-headline-lg tracking-tight font-extrabold text-on-primary">
-            Welcome back, Ananya! 🚀
+            Welcome back, {firstName}! 🚀
           </h1>
 <p className="font-body-lg text-body-lg text-primary-fixed-dim/95 leading-relaxed">
             Your profile strength is in the <span className="text-secondary-fixed font-semibold">top 15%</span> this week!
@@ -162,7 +170,7 @@ export default function StudentDashboardPage() {
                     </span>
 </div>
 <p className="font-body-sm text-body-sm text-on-surface-variant mt-0.5">
-                    Account: <span className="font-mono font-medium text-primary">@ananya-dev</span>
+                    Account: <span className="font-mono font-medium text-primary">@{firstName.toLowerCase()}-dev</span>
                   </p>
 </div>
 </div>
@@ -289,7 +297,7 @@ export default function StudentDashboardPage() {
 <div className="space-y-space-2xs">
 <span className="font-label-md text-label-md text-primary-fixed-dim tracking-wide">VERIFIED TALENT CREDENTIAL</span>
 <h4 className="font-headline-sm text-headline-sm font-extrabold text-white tracking-tight">Tier-1 Verified Full-Stack</h4>
-<p className="font-body-sm text-body-sm text-white/80">Issued to <strong className="text-white">Ananya Sharma</strong> • Token #VT-9482</p>
+<p className="font-body-sm text-body-sm text-white/80">Issued to <strong className="text-white">{fullName}</strong> • Token #VT-9482</p>
 </div>
 {/* Inline Trust Graphic */}
 <div className="mt-space-md pt-space-sm border-t border-white/15 flex items-center justify-between text-white/70 font-label-md text-label-md">
