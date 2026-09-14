@@ -124,10 +124,10 @@ export default async function StudentDashboardPage() {
 </div>
 </div>
 <div className="shrink-0 flex items-center md:self-center">
-<a className="w-full md:w-auto inline-flex items-center justify-center gap-space-xs px-space-lg py-space-sm rounded-xl bg-secondary-container text-on-secondary font-label-lg text-label-lg shadow-sm hover:scale-[1.02] active:scale-[0.98] transition-transform" data-path="submit-project" href="#">
+<Link href="/projects/submit" className="w-full md:w-auto inline-flex items-center justify-center gap-space-xs px-space-lg py-space-sm rounded-xl bg-secondary-container text-on-secondary font-label-lg text-label-lg shadow-sm hover:scale-[1.02] active:scale-[0.98] transition-transform">
 <span>Submit Project</span>
 <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
-</a>
+</Link>
 </div>
 </div>
 </div>
@@ -149,10 +149,10 @@ export default async function StudentDashboardPage() {
 </div>
 </div>
 <div className="shrink-0 flex items-center md:self-center">
-<a className="w-full md:w-auto inline-flex items-center justify-center gap-space-xs px-space-lg py-space-sm rounded-xl bg-primary text-on-primary font-label-lg text-label-lg shadow-sm hover:bg-primary-container transition-all" data-path="skill-assessment" href="#">
+<Link href="/assessment" className="w-full md:w-auto inline-flex items-center justify-center gap-space-xs px-space-lg py-space-sm rounded-xl bg-primary text-on-primary font-label-lg text-label-lg shadow-sm hover:bg-primary-container transition-all">
 <span>Start Assessment</span>
 <span className="material-symbols-outlined text-[18px]">play_arrow</span>
-</a>
+</Link>
 </div>
 </div>
 </div>
@@ -190,9 +190,9 @@ export default async function StudentDashboardPage() {
 </div>
 <p className="font-body-sm text-body-sm text-on-surface-variant mt-0.5">Engineered solutions backed by real repositories and live endpoints</p>
 </div>
-<a className="font-label-lg text-label-lg text-primary hover:text-primary-container font-semibold inline-flex items-center gap-1" data-path="submit-project" href="#">
+<Link href="/projects/submit" className="font-label-lg text-label-lg text-primary hover:text-primary-container font-semibold inline-flex items-center gap-1">
 <span>+ Add New Work</span>
-</a>
+</Link>
 </div>
 <div className="grid grid-cols-1 md:grid-cols-2 gap-space-md">
 {/* Project 1: DistroPay */}
