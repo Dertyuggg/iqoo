@@ -9,7 +9,7 @@ export default async function StudentProfilePage() {
   const { data: student } = user ? await supabase.from('students').select('*').eq('id', user.id).single() : { data: null };
   const fullName = student?.full_name || user?.user_metadata?.full_name || 'Anonymous User';
   const avatarUrl = user?.user_metadata?.avatar_url || 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + encodeURIComponent(fullName);
-  const collegeName = student?.college || 'Government Engineering College, Bilaspur (Tier-3 College)';
+  const collegeName = student?.college || 'Add your college';
 
   return (
     <>
@@ -59,24 +59,20 @@ export default async function StudentProfilePage() {
 </div>
 {/* Headline / Tagline */}
 <p className="font-title-md text-title-md text-on-surface font-semibold max-w-3xl">
-            Full-Stack Software Engineer • Open Source Enthusiast • Building high-throughput web systems
+            {student?.domain_interests && student.domain_interests.length > 0 ? student.domain_interests.join(' • ') : 'Update your domains in Edit Profile'}
           </p>
 {/* Education & Location Metadata */}
 <div className="flex flex-wrap items-center gap-y-1 gap-x-space-md text-on-surface-variant font-body-sm text-body-sm pt-1">
 <span className="flex items-center gap-1">
 <span className="material-symbols-outlined text-base text-primary">school</span>
-              B.Tech in Computer Science '25 • {collegeName}
-            </span>
-<span className="flex items-center gap-1">
-<span className="material-symbols-outlined text-base text-secondary">location_on</span>
-              Bilaspur, Chhattisgarh, India
+              {collegeName}
             </span>
 </div>
 {/* Quick Links & Contact Bar */}
 <div className="flex flex-wrap items-center gap-space-sm pt-space-sm">
 <a className="inline-flex items-center gap-1.5 px-space-sm py-1.5 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md text-label-md transition-colors" href="https://github.com" rel="noopener noreferrer" target="_blank">
 <span className="material-symbols-outlined text-base">code</span>
-              GitHub (@ananya-sharma)
+              GitHub ({student?.github_connected ? 'Connected' : 'Not Connected'})
             </a>
 <a className="inline-flex items-center gap-1.5 px-space-sm py-1.5 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md text-label-md transition-colors" href="https://linkedin.com" rel="noopener noreferrer" target="_blank">
 <span className="material-symbols-outlined text-base">hub</span>
@@ -88,12 +84,12 @@ export default async function StudentProfilePage() {
             </a>
 </div>
 </div>
-{/* Recruiter Action Module (Sticky CTA Box) */}
+{/* Actions */}
 <div className="w-full md:w-auto flex md:flex-col items-stretch gap-space-xs shrink-0 pt-space-xs">
-<button className="flex-1 md:flex-initial inline-flex items-center justify-center gap-space-xs px-space-lg py-space-sm bg-secondary-container hover:bg-secondary text-on-secondary rounded-xl font-label-lg text-label-lg shadow-sm transition-all transform hover:-translate-y-0.5" type="button">
-<span className="material-symbols-outlined text-lg">calendar_month</span>
-            Request Interview / Resume
-          </button>
+<Link href="/profile/edit" className="flex-1 md:flex-initial inline-flex items-center justify-center gap-space-xs px-space-lg py-space-sm bg-secondary-container hover:bg-secondary text-on-secondary rounded-xl font-label-lg text-label-lg shadow-sm transition-all transform hover:-translate-y-0.5">
+<span className="material-symbols-outlined text-lg">edit</span>
+            Edit Profile
+          </Link>
 <button className="inline-flex items-center justify-center gap-space-xs px-space-md py-space-sm bg-surface-container hover:bg-surface-container-high text-on-surface rounded-xl font-label-lg text-label-lg transition-colors" id="share-profile-btn" type="button">
 <span className="material-symbols-outlined text-lg text-primary">share</span>
             Share Profile

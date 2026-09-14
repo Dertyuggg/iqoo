@@ -32,11 +32,11 @@ export default async function StudentDashboardPage() {
           </p>
 </div>
 <div className="flex items-center gap-space-sm">
-<a className="inline-flex items-center gap-space-xs px-space-lg py-space-sm rounded-xl bg-surface-container-lowest text-primary font-label-lg text-label-lg shadow-sm hover:shadow-md transition-all hover:scale-[1.02] active:scale-[0.98]" data-path="public-profile" href="#">
+<Link className="inline-flex items-center gap-space-xs px-space-lg py-space-sm rounded-xl bg-surface-container-lowest text-primary font-label-lg text-label-lg shadow-sm hover:shadow-md transition-all hover:scale-[1.02] active:scale-[0.98]" href="/profile/setup">
 <span className="material-symbols-outlined text-[20px]">visibility</span>
 <span>View Public Showcase</span>
-</a>
-<Link href="/profile/setup" className="inline-flex items-center gap-space-xs px-space-lg py-space-sm rounded-xl bg-white/20 hover:bg-white/30 text-on-primary font-label-lg text-label-lg shadow-sm backdrop-blur-md transition-all hover:scale-[1.02] active:scale-[0.98]">
+</Link>
+<Link href="/profile/edit" className="inline-flex items-center gap-space-xs px-space-lg py-space-sm rounded-xl bg-white/20 hover:bg-white/30 text-on-primary font-label-lg text-label-lg shadow-sm backdrop-blur-md transition-all hover:scale-[1.02] active:scale-[0.98]">
 <span className="material-symbols-outlined text-[20px]">edit</span>
 <span>Edit Profile</span>
 </Link>
