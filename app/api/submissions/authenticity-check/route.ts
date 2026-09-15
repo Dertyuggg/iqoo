@@ -1,15 +1,33 @@
 import { NextResponse } from 'next/server';
-import { createAdminClient } from '@/lib/supabase/server';
+import { createAdminClient, createClient } from '@/lib/supabase/server';
 import { verifyGithubRepo } from '@/lib/github-verification';
 
 export const maxDuration = 60;
 
 export async function POST(req: Request) {
   try {
+    const supabaseClient = await createClient();
+    const { data: { user } } = await supabaseClient.auth.getUser();
+
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     const { submissionId, repoUrl } = await req.json();
 
     if (!submissionId || !repoUrl) {
       return NextResponse.json({ error: 'Missing submissionId or repoUrl' }, { status: 400 });
+    }
+
+    // Verify ownership
+    const { data: submissionData, error: subError } = await supabaseClient
+      .from('project_submissions')
+      .select('student_id')
+      .eq('id', submissionId)
+      .single();
+
+    if (subError || !submissionData || submissionData.student_id !== user.id) {
+      return NextResponse.json({ error: 'Forbidden or Not Found' }, { status: 403 });
     }
 
     const supabase = await createAdminClient();
@@ -69,7 +87,10 @@ export async function POST(req: Request) {
       const baseUrl = `${url.protocol}//${url.host}`;
       fetch(`${baseUrl}/api/submissions/ai-review`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Cookie': req.headers.get('cookie') || ''
+        },
         body: JSON.stringify({ submissionId, repoUrl }),
       }).catch(err => console.error('Failed to trigger AI review:', err));
     }
