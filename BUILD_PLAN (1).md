@@ -36,21 +36,7 @@ Adjust hour counts to your actual hackathon length — the step order matters mo
 
 ### Master Prompt — Step 0
 ```
-Read AGENTS.md, PROJECT.md, DATA_MODEL.md, and TECH_STACK.md in this repo before doing anything else.
 
-This project (iqoo) already has: Next.js App Router with TypeScript + Tailwind, route groups at app/(student), app/(company), app/(auth), and Supabase client utilities at lib/supabase/server.ts and lib/supabase/client.ts. Do NOT recreate any of this — inspect what exists first and confirm it matches TECH_STACK.md conventions (server client uses service role key server-only, never exposed to client bundle). Flag anything that deviates rather than silently rewriting it.
-
-Then:
-1. Create the initial Supabase migration (supabase/migrations/) implementing the core tables from DATA_MODEL.md: students, activity_events, project_submissions, authenticity_checks, ai_reviews, defense_sessions, human_audits, verified_ranks, companies, hires, performance_checkins.
-2. Write RLS policies in the SAME migration file for every table, following TECH_STACK.md: students can only read/write their own data, companies can only read from verified_ranks (never raw submission/assessment data), service-role-only access for pipeline internals.
-3. Confirm/set up environment variables (.env.local.example) for Supabase URL, anon key, and service role key, with clear comments on which are safe for NEXT_PUBLIC_ and which are server-only — check what's already in .env.local first rather than overwriting real credentials.
-4. Add lib/verification/ as a new folder for pipeline logic (commit checks, AI review, scoring) if it doesn't already exist — this is where Dhyanesh's Step D2-D4 work will live.
-5. Run `supabase gen types typescript` (or equivalent) once the migration is applied, so both of you get typed table access from the start — this matters more than usual since you're on TypeScript and splitting work across two people against the same schema.
-
-Do not build any UI yet beyond what's already scaffolded. This step is schema + types only. When done, output the migration SQL so both team members can review the schema together before splitting into individual workstreams.
-```
-
-**Checkpoint before splitting:** both of you should read the generated migration and generated TypeScript types, and agree the table/RLS structure matches what you'll each build against. This is the single most important sync point in the whole build — since the scaffold already exists, this checkpoint is now your main "are we aligned" moment instead of a full project-setup review.
 
 ---
 
