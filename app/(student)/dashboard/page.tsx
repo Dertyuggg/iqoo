@@ -1,7 +1,37 @@
 import Link from 'next/link';
-import Navbar from '@/components/Navbar';
-
+import Sidebar from '@/components/Sidebar';
+import DashboardScoreRing from '@/components/DashboardScoreRing';
+import DashboardSkillBars from '@/components/DashboardSkillBars';
+import DashboardStreakHeatmap from '@/components/DashboardStreakHeatmap';
+import { Flame } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
+
+/* ── Pipeline stages ── */
+const stages = [
+  { title: 'Show up', sub: '41-day streak', status: 'cleared', color: '#f472b6' },
+  { title: 'Prove the basics', sub: '6/6 problems, 0 flags', status: 'cleared', color: '#34d399' },
+  { title: 'Ship something', sub: '2 projects submitted', status: 'cleared', color: '#60a5fa' },
+  { title: 'Get reviewed', sub: 'Commit check running', status: 'in progress', color: '#fbbf24' },
+  { title: 'Defend it live', sub: 'Thursday 6:40 pm', status: 'not started', color: '#f87171' },
+];
+
+/* ── Score breakdown ── */
+const scores = [
+  { label: 'Consistency', value: 94, color: '#f472b6' },
+  { label: 'Fundamentals', value: 81, color: '#fbbf24' },
+  { label: 'Shipped work', value: 72, color: '#34d399' },
+  { label: 'Code review', value: 66, color: '#60a5fa' },
+  { label: 'Defence', value: null, color: '#6b6784' },
+];
+
+/* ── Activity feed ── */
+const activity = [
+  { icon: '🔵', title: 'Commit check started', sub: 'kisan-mandi-price · 214 commits', time: '2m' },
+  { icon: '✅', title: 'Project accepted', sub: 'Repo authorship matched', time: '2h' },
+  { icon: '🔴', title: 'Defence slot confirmed', sub: 'Thursday, 6:40 pm IST', time: '5h' },
+  { icon: '🟡', title: 'Assessment cleared', sub: '6 of 6, no paste attempts', time: '1d' },
+  { icon: '🔥', title: 'Streak hit 40 days', sub: 'Top 8% consistency', time: '2d' },
+];
 
 export default async function StudentDashboardPage() {
   const supabase = await createClient();
@@ -10,319 +40,192 @@ export default async function StudentDashboardPage() {
   const fullName = student?.full_name || user?.user_metadata?.full_name || 'Anonymous User';
   const firstName = fullName.split(' ')[0];
 
+  /* ── Greeting based on time ── */
+  const hour = new Date().getHours();
+  const greeting = hour < 12 ? 'Morning' : hour < 17 ? 'Afternoon' : 'Evening';
+
   return (
     <>
-      <Navbar activePath="/dashboard" />
-      <main className="w-full pt-20 bg-surface min-h-[calc(100vh-80px)]"><div className="flex flex-col w-full">
-<div className="max-w-[1280px] mx-auto w-full px-gutter-mobile lg:px-gutter-desktop py-space-xl space-y-space-xl">
-{/* Top Greeting Banner & Momentum Stats */}
-<section className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-primary via-primary-container to-tertiary text-on-primary p-space-lg lg:p-space-xl shadow-xl">
-<div className="absolute -right-16 -top-16 w-80 h-80 rounded-full bg-primary-fixed opacity-10 blur-3xl pointer-events-none"></div>
-<div className="absolute right-1/3 -bottom-20 w-64 h-64 rounded-full bg-secondary-container opacity-20 blur-2xl pointer-events-none"></div>
-<div className="relative z-10 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-space-lg">
-<div className="space-y-space-xs max-w-2xl">
-<div className="inline-flex items-center gap-space-2xs px-space-sm py-space-2xs rounded-full bg-white/15 backdrop-blur-md text-primary-fixed font-badge text-badge tracking-wider uppercase">
-<span className="material-symbols-outlined text-[16px]">bolt</span> Momentum Surge
-          </div>
-<h1 className="font-headline-lg text-headline-lg tracking-tight font-extrabold text-on-primary">
-            Welcome back, {firstName}! 🚀
-          </h1>
-<p className="font-body-lg text-body-lg text-primary-fixed-dim/95 leading-relaxed">
-            Your profile strength is in the <span className="text-secondary-fixed font-semibold">top 15%</span> this week!
-          </p>
-</div>
-<div className="flex items-center gap-space-sm">
-<Link className="inline-flex items-center gap-space-xs px-space-lg py-space-sm rounded-xl bg-surface-container-lowest text-primary font-label-lg text-label-lg shadow-sm hover:shadow-md transition-all hover:scale-[1.02] active:scale-[0.98]" href="/profile/setup">
-<span className="material-symbols-outlined text-[20px]">visibility</span>
-<span>View Public Showcase</span>
-</Link>
-<Link href="/profile/edit" className="inline-flex items-center gap-space-xs px-space-lg py-space-sm rounded-xl bg-white/20 hover:bg-white/30 text-on-primary font-label-lg text-label-lg shadow-sm backdrop-blur-md transition-all hover:scale-[1.02] active:scale-[0.98]">
-<span className="material-symbols-outlined text-[20px]">edit</span>
-<span>Edit Profile</span>
-</Link>
-</div>
-</div>
-{/* Quick Stats Row */}
-<div className="relative z-10 grid grid-cols-2 md:grid-cols-4 gap-space-sm mt-space-xl pt-space-lg border-t border-white/10">
-<div className="flex flex-col p-space-sm rounded-2xl bg-white/10 backdrop-blur-sm transition-transform hover:-translate-y-1">
-<div className="flex items-center justify-between text-primary-fixed-dim">
-<span className="font-label-md text-label-md uppercase tracking-wider">Profile Views</span>
-<span className="material-symbols-outlined text-[18px]">trending_up</span>
-</div>
-<div className="mt-space-2xs flex items-baseline gap-space-xs">
-<span className="font-display-hero text-display-hero-mobile lg:text-display-hero font-extrabold leading-none">48</span>
-<span className="font-badge text-badge text-secondary-fixed font-semibold">+32% wk</span>
-</div>
-</div>
-<div className="flex flex-col p-space-sm rounded-2xl bg-white/10 backdrop-blur-sm transition-transform hover:-translate-y-1">
-<div className="flex items-center justify-between text-primary-fixed-dim">
-<span className="font-label-md text-label-md uppercase tracking-wider">Inquiries</span>
-<span className="material-symbols-outlined text-[18px]">mail</span>
-</div>
-<div className="mt-space-2xs flex items-baseline gap-space-xs">
-<span className="font-display-hero text-display-hero-mobile lg:text-display-hero font-extrabold leading-none">3</span>
-<span className="font-badge text-badge text-secondary-fixed font-semibold">Active direct</span>
-</div>
-</div>
-<div className="flex flex-col p-space-sm rounded-2xl bg-white/10 backdrop-blur-sm transition-transform hover:-translate-y-1">
-<div className="flex items-center justify-between text-primary-fixed-dim">
-<span className="font-label-md text-label-md uppercase tracking-wider">Verified Skills</span>
-<span className="material-symbols-outlined text-[18px]">verified</span>
-</div>
-<div className="mt-space-2xs flex items-baseline gap-space-xs">
-<span className="font-display-hero text-display-hero-mobile lg:text-display-hero font-extrabold leading-none">4</span>
-<span className="font-badge text-badge text-primary-fixed font-semibold">Gold standard</span>
-</div>
-</div>
-<div className="flex flex-col p-space-sm rounded-2xl bg-white/10 backdrop-blur-sm transition-transform hover:-translate-y-1">
-<div className="flex items-center justify-between text-primary-fixed-dim">
-<span className="font-label-md text-label-md uppercase tracking-wider">Showcase Proof</span>
-<span className="material-symbols-outlined text-[18px]">rocket_launch</span>
-</div>
-<div className="mt-space-2xs flex items-baseline gap-space-xs">
-<span className="font-display-hero text-display-hero-mobile lg:text-display-hero font-extrabold leading-none">2</span>
-<span className="font-badge text-badge text-white/80 font-medium">1 in audit</span>
-</div>
-</div>
-</div>
-</section>
-{/* Main Workspace Layout: Asymmetric 8 / 4 Grid */}
-<div className="grid grid-cols-1 lg:grid-cols-12 gap-space-xl items-start">
-{/* Left Main Column (8 cols): Actionable Personal Growth & Projects */}
-<div className="lg:col-span-8 space-y-space-xl">
-{/* 1. Next Milestones (Growth Launchpad) */}
-<section className="bg-surface-container-lowest rounded-3xl p-space-lg lg:p-space-xl shadow-sm">
-<div className="flex flex-col sm:flex-row sm:items-center justify-between gap-space-sm pb-space-lg">
-<div>
-<div className="flex items-center gap-space-xs">
-<span className="h-3 w-3 rounded-full bg-secondary-container"></span>
-<span className="font-label-md text-label-md uppercase tracking-widest text-secondary font-bold">Your Growth Trajectory</span>
-</div>
-<h2 className="font-headline-md text-headline-md font-bold text-on-surface mt-space-2xs">Recommended Next Steps</h2>
-</div>
-<div className="flex items-center gap-space-xs">
-<span className="font-badge text-badge text-primary bg-primary/10 px-space-sm py-space-2xs rounded-full font-bold">Step 2 of 3 Completed</span>
-</div>
-</div>
-{/* Milestones Cards */}
-<div className="space-y-space-md">
-{/* Milestone 1: Flagship Project Submission */}
-<div className="group relative overflow-hidden p-space-lg rounded-2xl bg-surface-container-low hover:bg-surface-container transition-all shadow-sm">
-<div className="flex flex-col md:flex-row md:items-center justify-between gap-space-md">
-<div className="flex items-start gap-space-md">
-<div className="w-12 h-12 rounded-2xl bg-secondary-container text-on-secondary flex items-center justify-center shrink-0 shadow-md">
-<span className="material-symbols-outlined text-[26px]">terminal</span>
-</div>
-<div className="space-y-space-2xs">
-<div className="flex items-center gap-space-xs flex-wrap">
-<h3 className="font-title-md text-title-md font-bold text-on-surface">Submit your flagship project</h3>
-<span className="px-space-xs py-space-2xs rounded-md bg-secondary-fixed text-on-secondary-fixed font-badge text-badge">Ready to link</span>
-</div>
-<p className="font-body-md text-body-md text-on-surface-variant max-w-xl">
-                      Showcase your top projects to boost your visibility.
-                    </p>
-</div>
-</div>
-<div className="shrink-0 flex items-center md:self-center">
-<Link href="/projects/submit" className="w-full md:w-auto inline-flex items-center justify-center gap-space-xs px-space-lg py-space-sm rounded-xl bg-secondary-container text-on-secondary font-label-lg text-label-lg shadow-sm hover:scale-[1.02] active:scale-[0.98] transition-transform">
-<span>Submit Project</span>
-<span className="material-symbols-outlined text-[18px]">arrow_forward</span>
-</Link>
-</div>
-</div>
-</div>
-{/* Milestone 2: System Design Verification */}
-<div className="group relative overflow-hidden p-space-lg rounded-2xl bg-surface-container-low hover:bg-surface-container transition-all shadow-sm">
-<div className="flex flex-col md:flex-row md:items-center justify-between gap-space-md">
-<div className="flex items-start gap-space-md">
-<div className="w-12 h-12 rounded-2xl bg-tertiary text-on-tertiary flex items-center justify-center shrink-0 shadow-md">
-<span className="material-symbols-outlined text-[26px]">schema</span>
-</div>
-<div className="space-y-space-2xs">
-<div className="flex items-center gap-space-xs flex-wrap">
-<h3 className="font-title-md text-title-md font-bold text-on-surface">Verify your System Design &amp; API skills</h3>
-<span className="px-space-xs py-space-2xs rounded-md bg-tertiary-fixed text-on-tertiary-fixed font-badge text-badge">45 min benchmark</span>
-</div>
-<p className="font-body-md text-body-md text-on-surface-variant max-w-xl">
-                      Unlock the <span className="font-semibold text-primary">"Verified Backend"</span> credential.
-                    </p>
-</div>
-</div>
-<div className="shrink-0 flex items-center md:self-center">
-<Link href="/assessment" className="w-full md:w-auto inline-flex items-center justify-center gap-space-xs px-space-lg py-space-sm rounded-xl bg-primary text-on-primary font-label-lg text-label-lg shadow-sm hover:bg-primary-container transition-all">
-<span>Start Assessment</span>
-<span className="material-symbols-outlined text-[18px]">play_arrow</span>
-</Link>
-</div>
-</div>
-</div>
-{/* Milestone 3: Completed GitHub Sync */}
-<div className="p-space-md lg:p-space-lg rounded-2xl bg-surface-container-lowest shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-space-md opacity-90">
-<div className="flex items-center gap-space-md">
-<div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
-<span className="material-symbols-outlined text-[22px]">check_circle</span>
-</div>
-<div>
-<div className="flex items-center gap-space-xs">
-<h3 className="font-title-md text-title-md font-semibold text-on-surface">Connect your GitHub account</h3>
-<span className="px-space-xs py-space-2xs rounded-full bg-primary/15 text-primary font-badge text-badge flex items-center gap-1">
-<span className="material-symbols-outlined text-[12px]">done</span> Synced
-                    </span>
-</div>
-<p className="font-body-sm text-body-sm text-on-surface-variant mt-0.5">
-                    Account: <span className="font-mono font-medium text-primary">@{firstName.toLowerCase()}-dev</span>
-                  </p>
-</div>
-</div>
-<div className="shrink-0 flex items-center gap-space-xs text-on-surface-variant font-label-md text-label-md">
-<span className="material-symbols-outlined text-[18px]">verified_user</span> Continuous Sync Active
-              </div>
-</div>
-</div>
-</section>
-{/* 2. Your Active Showcase Projects */}
-<section className="space-y-space-md">
-<div className="flex items-center justify-between">
-<div>
-<div className="flex items-center gap-space-xs">
-<span className="material-symbols-outlined text-primary text-[20px]">layers</span>
-<h2 className="font-headline-md text-headline-md font-bold text-on-surface">Showcase Projects</h2>
-</div>
-<p className="font-body-sm text-body-sm text-on-surface-variant mt-0.5">Engineered solutions backed by real repositories and live endpoints</p>
-</div>
-<Link href="/projects/submit" className="font-label-lg text-label-lg text-primary hover:text-primary-container font-semibold inline-flex items-center gap-1">
-<span>+ Add New Work</span>
-</Link>
-</div>
-<div className="grid grid-cols-1 md:grid-cols-2 gap-space-md">
-{/* Project 1: DistroPay */}
-<article className="bg-surface-container-lowest rounded-3xl overflow-hidden shadow-sm flex flex-col justify-between group hover:shadow-xl transition-all duration-300">
-<div className="relative h-44 w-full overflow-hidden bg-surface-container">
-<img className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" alt="Modern abstract software dashboard showing financial analytics and micro-lending metrics with teal illuminated UI lines, ambient dark teal and white accents, high fidelity tech render" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAszcDvFfp5-lf9KuPI2IlkLITSPLrxHNTvvWPE79kv9pAfXyTfnGEdEimytu76GC-3QZ2Z6QHifN1akaNmSyTm7WICtQn-WWKmV9i4pwBDTIlbJPGXwSMFzZt4ktzpjhVb_HnSOipqcZ2x17NlTXvbAyZ5HOx8jeWOhecn4qJhTYpRuzHZjE_fGcm76AcOux--DXYxgx1xgqcb-xujOzJgWkbCAu5UribU1yiGzPLOsR2lAvMpqhQ19g"/>
-<div className="absolute top-3 right-3">
-<span className="inline-flex items-center gap-1.5 px-space-sm py-1 rounded-full bg-primary/95 text-on-primary font-badge text-badge shadow-md backdrop-blur-md">
-<span className="material-symbols-outlined text-[13px]">verified</span> Verified &amp; Public
-                  </span>
-</div>
-<div className="absolute bottom-3 left-3 flex gap-1.5 flex-wrap">
-<span className="px-2 py-0.5 rounded-md bg-surface-container-lowest/90 text-on-surface font-badge text-badge backdrop-blur-sm font-mono">Next.js</span>
-<span className="px-2 py-0.5 rounded-md bg-surface-container-lowest/90 text-on-surface font-badge text-badge backdrop-blur-sm font-mono">TypeScript</span>
-<span className="px-2 py-0.5 rounded-md bg-surface-container-lowest/90 text-on-surface font-badge text-badge backdrop-blur-sm font-mono">Tailwind</span>
-</div>
-</div>
-<div className="p-space-lg flex-1 flex flex-col justify-between space-y-space-md">
-<div className="space-y-space-xs">
-<h3 className="font-headline-sm text-headline-sm font-bold text-on-surface group-hover:text-primary transition-colors">
-                    DistroPay: Web3 Micro-lending Interface
-                  </h3>
-<p className="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">
-                    A decentralized collateral management app.
-                  </p>
-</div>
-<div className="pt-space-sm flex items-center justify-between">
-<div className="flex items-center gap-space-2xs text-primary font-label-md text-label-md font-semibold">
-<span className="material-symbols-outlined text-[16px]">insights</span>
-<span>32 recruiter clicks</span>
-</div>
-<div className="flex items-center gap-space-xs">
-<button className="p-space-2xs rounded-lg hover:bg-surface-container text-on-surface-variant hover:text-on-surface transition-colors" title="Live Preview" type="button">
-<span className="material-symbols-outlined text-[20px]">open_in_new</span>
-</button>
-<button className="p-space-2xs rounded-lg hover:bg-surface-container text-on-surface-variant hover:text-on-surface transition-colors" title="View Verification Report" type="button">
-<span className="material-symbols-outlined text-[20px]">fact_check</span>
-</button>
-</div>
-</div>
-</div>
-</article>
-{/* Project 2: Realtime Collaborative Editor */}
-<article className="bg-surface-container-lowest rounded-3xl overflow-hidden shadow-sm flex flex-col justify-between group hover:shadow-xl transition-all duration-300">
-<div className="relative h-44 w-full overflow-hidden bg-surface-container">
-<img className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" alt="Minimalist code editor and collaborative document interface with multi-cursor avatars, real-time sync indicators, clean typography on cool grey and soft cyan backdrop, software architecture UI" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDEzoi6SsclBQGYhao5YIRi6kruM9YB7Oyx4ROKEs5kqAhVetoDV8LCzZF6mdSZKzu7tYV0BjtyDV1-KQUQDeZe2RsdUkmuG-F_gxs4vr9P42SuhMw_9uu1dz5SmNed2hpBmCeE1Mz3p6Z9UAxkgfnqazllsxxm1UWSUqD7PxuTuLp_hHKuGjDJNK3FLwYfaDw0CdHI7vOTP7haEswDxEeVsshn7LVXaPC6JoKiFAcOx09asptx19SHwg"/>
-<div className="absolute top-3 right-3">
-<span className="inline-flex items-center gap-1.5 px-space-sm py-1 rounded-full bg-secondary-container text-on-secondary font-badge text-badge shadow-md">
-<span className="material-symbols-outlined text-[13px] animate-spin">sync</span> In Review (Est. 12h)
-                  </span>
-</div>
-<div className="absolute bottom-3 left-3 flex gap-1.5 flex-wrap">
-<span className="px-2 py-0.5 rounded-md bg-surface-container-lowest/90 text-on-surface font-badge text-badge backdrop-blur-sm font-mono">Go</span>
-<span className="px-2 py-0.5 rounded-md bg-surface-container-lowest/90 text-on-surface font-badge text-badge backdrop-blur-sm font-mono">WebSockets</span>
-<span className="px-2 py-0.5 rounded-md bg-surface-container-lowest/90 text-on-surface font-badge text-badge backdrop-blur-sm font-mono">Redis</span>
-</div>
-</div>
-<div className="p-space-lg flex-1 flex flex-col justify-between space-y-space-md">
-<div className="space-y-space-xs">
-<h3 className="font-headline-sm text-headline-sm font-bold text-on-surface group-hover:text-primary transition-colors">
-                    Realtime Collaborative Markdown Editor
-                  </h3>
-<p className="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">
-                    Distributed CRDT text synchronization engine.
-                  </p>
-</div>
-<div className="pt-space-sm flex items-center justify-between">
-<div className="flex items-center gap-space-2xs text-secondary font-label-md text-label-md font-semibold">
-<span className="material-symbols-outlined text-[16px]">hourglass_top</span>
-<span>Automated test harness: 100% pass</span>
-</div>
-<div className="flex items-center gap-space-xs">
-<button className="p-space-2xs rounded-lg hover:bg-surface-container text-on-surface-variant hover:text-on-surface transition-colors" title="Check Audit Log" type="button">
-<span className="material-symbols-outlined text-[20px]">pending_actions</span>
-</button>
-</div>
-</div>
-</div>
-</article>
-</div>
-</section>
-</div>
-{/* Right Sidebar (4 cols): Credential Badges, Market Demand, Community Events */}
-<aside className="lg:col-span-4 space-y-space-lg">
-{/* 1. Verified Builder Badge Preview & Export */}
-<div className="relative overflow-hidden rounded-3xl bg-surface-container-lowest p-space-lg shadow-sm">
-<div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-primary via-tertiary to-secondary-container"></div>
-<div className="flex items-center justify-between mb-space-md pt-space-xs">
-<span className="font-label-md text-label-md uppercase tracking-wider text-primary font-bold">Authenticated Credential</span>
-<span className="material-symbols-outlined text-primary text-[20px]">verified_user</span>
-</div>
-{/* Shiny Metallic Gradient Card Preview */}
-<div className="relative rounded-2xl p-space-lg bg-gradient-to-br from-[#0b1c30] via-[#005049] to-[#008378] text-white shadow-xl overflow-hidden group">
-{/* Shimmer Effect */}
-<div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
-<div className="flex items-center justify-between mb-space-md">
-<div className="w-10 h-10 rounded-xl bg-white/15 backdrop-blur-md flex items-center justify-center">
-<span className="material-symbols-outlined text-primary-fixed text-[24px]">workspace_premium</span>
-</div>
-<span className="font-badge text-badge px-space-xs py-space-2xs rounded bg-white/20 uppercase tracking-widest text-primary-fixed-dim">Tier-1 Level</span>
-</div>
-<div className="space-y-space-2xs">
-<span className="font-label-md text-label-md text-primary-fixed-dim tracking-wide">VERIFIED TALENT CREDENTIAL</span>
-<h4 className="font-headline-sm text-headline-sm font-extrabold text-white tracking-tight">Tier-1 Verified Full-Stack</h4>
-<p className="font-body-sm text-body-sm text-white/80">Issued to <strong className="text-white">{fullName}</strong> • Token #VT-9482</p>
-</div>
-{/* Inline Trust Graphic */}
-<div className="mt-space-md pt-space-sm border-t border-white/15 flex items-center justify-between text-white/70 font-label-md text-label-md">
-<span className="flex items-center gap-1 font-mono text-[11px]"><span className="w-2 h-2 rounded-full bg-primary-fixed"></span> Cryptographically Signed</span>
-<span className="font-badge text-badge">Oct 2025</span>
-</div>
-</div>
-{/* Action Buttons */}
-<div className="mt-space-md space-y-space-xs">
-<button className="w-full inline-flex items-center justify-center gap-space-xs px-space-md py-space-sm rounded-xl bg-primary text-on-primary font-label-lg text-label-lg shadow-sm hover:bg-primary-container transition-colors" id="embedBadgeBtn" type="button">
-<span className="material-symbols-outlined text-[18px]">share</span>
-<span>Embed in Resume / LinkedIn</span>
-</button>
-<div className="hidden text-center font-body-sm text-body-sm text-primary font-semibold py-1" id="embedToast">
-              Copied markdown embed code &amp; badge badge link!
-            </div>
-</div>
-</div>
+      <main className="w-full bg-surface min-h-screen pb-24">
+        <div className="flex">
 
-</aside>
-</div>
-</div>
-</div>
-</main>
-      <footer className="w-full bg-surface-container-low"><div className="max-w-[1280px] mx-auto px-gutter-mobile lg:px-gutter-desktop py-space-2xl"><div className="flex flex-col md:flex-row items-center justify-between gap-space-lg pb-space-xl"><div className="flex flex-col items-center md:items-start gap-space-2xs"><div className="flex items-center gap-space-xs"><span className="font-title-md text-title-md text-on-surface font-bold">Verified Talent</span><span className="font-badge text-badge text-primary bg-surface-container px-space-xs py-space-2xs rounded-full">India Edition</span></div><p className="font-body-sm text-body-sm text-on-surface-variant">Built for ambitious builders across India</p></div><nav className="flex flex-wrap items-center justify-center gap-x-space-lg gap-y-space-xs"><a className="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" href="#">About Verified Talent</a><a className="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" href="#">For Employers</a><a className="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" href="#">Student Success Stories</a><a className="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" href="#">College Partnerships</a><a className="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" href="#">Privacy &amp; Terms</a></nav></div><div className="pt-space-lg text-center font-body-sm text-body-sm text-on-surface-variant">© 2025 Verified Talent. Democratizing career credibility through proof-of-work.</div></div></footer>
+          <Sidebar activePath="/dashboard" />
+
+          {/* ╔════════════════════════════════╗
+              ║        MAIN CONTENT           ║
+              ╚════════════════════════════════╝ */}
+          <div className="flex-1 min-w-0">
+            <div className="max-w-[1080px] mx-auto px-4 lg:px-8 py-6 space-y-6">
+
+              {/* ── Header: Greeting + Streak ── */}
+              <div className="flex items-start justify-between">
+                <div>
+                  <h1 className="font-display text-[clamp(1.5rem,3vw,2rem)] font-extrabold text-on-surface">
+                    {greeting}, {firstName}.
+                  </h1>
+                  <p className="text-on-surface-variant text-[15px] mt-1">
+                    Two stages left. Your defence slot is on Thursday.
+                  </p>
+                </div>
+                <div className="flex flex-col items-center bg-surface-container border border-outline/30 rounded-2xl px-4 py-3 shrink-0">
+                  <Flame className="w-6 h-6 text-[#FF6B35] fill-[#FF6B35] streak-flame" />
+                  <span className="text-on-surface text-[24px] font-extrabold leading-none mt-1">41</span>
+                  <span className="text-on-surface-muted text-[11px]">day streak</span>
+                </div>
+              </div>
+
+              {/* ── Top row: Score + Defence + Rank ── */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+
+                {/* Verification Score Card */}
+                <div className="bg-surface-container border border-outline/30 rounded-2xl p-5 card-glow">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-on-surface text-[15px] font-semibold">Verification score</h3>
+                    <span className="text-on-surface-muted text-[12px]">updated 2h ago</span>
+                  </div>
+                  <div className="flex gap-6">
+                    {/* Circular score */}
+                    <DashboardScoreRing score={68} />
+                    {/* Score breakdown */}
+                    <DashboardSkillBars scores={scores} />
+                  </div>
+                </div>
+
+                {/* Defence Round Card */}
+                <div className="bg-surface-container border border-outline/30 rounded-2xl p-5 card-glow">
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="text-on-surface text-[15px] font-semibold">Defence round</h3>
+                    <span className="px-2 py-0.5 rounded-full bg-success/20 text-success text-[11px] font-semibold">booked</span>
+                  </div>
+                  <p className="text-on-surface text-[18px] font-bold mb-1">Thursday, 6:40 pm</p>
+                  <p className="text-on-surface-variant text-[13px] leading-relaxed mb-4">
+                    Nine minutes on <span className="font-mono text-on-surface">kisan-mandi-price</span>.
+                    Questions come from your own diff — no prep material.
+                  </p>
+                  {/* Countdown */}
+                  <div className="grid grid-cols-4 gap-2 mb-4">
+                    {[
+                      { val: '02', label: 'days' },
+                      { val: '14', label: 'hrs' },
+                      { val: '08', label: 'min' },
+                      { val: '49', label: 'sec' },
+                    ].map((t) => (
+                      <div key={t.label} className="bg-surface-container-high rounded-xl p-2 text-center">
+                        <p className="text-on-surface text-[20px] font-extrabold leading-none">{t.val}</p>
+                        <p className="text-on-surface-muted text-[11px] mt-1">{t.label}</p>
+                      </div>
+                    ))}
+                  </div>
+                  <button className="w-full py-2.5 rounded-xl bg-on-surface text-surface text-[14px] font-semibold hover:bg-on-surface/90 transition-colors">
+                    Run a mock round
+                  </button>
+                </div>
+
+                {/* Rank Card */}
+                <div className="bg-surface-container border border-outline/30 rounded-2xl p-5 card-glow flex flex-col items-center justify-center text-center">
+                  <div className="flex items-center gap-2 mb-2 self-stretch justify-between">
+                    <h3 className="text-on-surface text-[15px] font-semibold">Your rank</h3>
+                    <span className="text-on-surface-muted text-[12px]">Backend · India</span>
+                  </div>
+                  <p className="text-gradient-hero text-[56px] font-extrabold leading-none my-3">#214</p>
+                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-success/15 text-success text-[13px] font-semibold mb-2">
+                    ↑ 47 this week
+                  </span>
+                  <p className="text-on-surface-muted text-[13px]">of 12,400 verified students</p>
+                </div>
+              </div>
+
+              {/* ── Where you are: Pipeline stages ── */}
+              <div className="bg-surface-container border border-outline/30 rounded-2xl p-5 card-glow">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-on-surface text-[17px] font-bold">Where you are</h3>
+                  <span className="text-on-surface-muted text-[13px]">2 of 5 stages left</span>
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+                  {stages.map((s) => {
+                    const statusStyle =
+                      s.status === 'cleared'
+                        ? 'bg-success/15 text-success'
+                        : s.status === 'in progress'
+                        ? 'bg-warning/15 text-warning'
+                        : 'bg-outline/20 text-on-surface-muted';
+
+                    const cardStyle =
+                      s.status === 'in progress'
+                        ? 'stage-card-active bg-surface-container-high'
+                        : s.status === 'cleared'
+                        ? 'stage-card-done'
+                        : 'bg-surface-container-high';
+
+                    return (
+                      <div
+                        key={s.title}
+                        className={`${cardStyle} border border-outline/30 rounded-xl p-4 flex flex-col gap-2`}
+                        style={{ '--stage-color': s.color } as React.CSSProperties}
+                      >
+                        <span className="text-[14px] font-bold" style={{ color: s.color }}>{s.title}</span>
+                        <span className="text-on-surface-variant text-[12px]">{s.sub}</span>
+                        <span className={`self-start px-2 py-0.5 rounded-md text-[11px] font-semibold ${statusStyle}`}>
+                          {s.status}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* ── Bottom row: Practice history + Activity feed ── */}
+              <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
+
+                {/* Practice History Heatmap */}
+                <div className="lg:col-span-3 bg-surface-container border border-outline/30 rounded-2xl p-5 card-glow">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-on-surface text-[15px] font-semibold">Practice history</h3>
+                    <span className="text-on-surface-muted text-[12px]">last 22 weeks</span>
+                  </div>
+                  {/* Heatmap grid */}
+                  <div className="overflow-x-auto pb-2">
+                    <DashboardStreakHeatmap />
+                  </div>
+                  {/* Legend */}
+                  <div className="flex items-center gap-2 mt-3">
+                    <span className="text-on-surface-muted text-[11px]">lighter</span>
+                    <div className="flex gap-1">
+                      <span className="w-3 h-3 rounded-sm bg-outline/20" />
+                      <span className="w-3 h-3 rounded-sm bg-[#FF6B3533]" />
+                      <span className="w-3 h-3 rounded-sm bg-[#FF6B3566]" />
+                      <span className="w-3 h-3 rounded-sm bg-[#FF6B3599]" />
+                      <span className="w-3 h-3 rounded-sm bg-[#FF6B35]" />
+                    </div>
+                    <span className="text-on-surface-muted text-[11px]">heavier</span>
+                  </div>
+                </div>
+
+                {/* What Changed (Activity Feed) */}
+                <div className="lg:col-span-2 bg-surface-container border border-outline/30 rounded-2xl p-5 card-glow">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-on-surface text-[15px] font-semibold">What changed</h3>
+                    <span className="text-success text-[12px] font-semibold">live</span>
+                  </div>
+                  <div className="flex flex-col gap-4">
+                    {activity.map((a) => (
+                      <div key={a.title} className="flex items-start gap-3">
+                        <span className="text-[16px] mt-0.5 shrink-0">{a.icon}</span>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-on-surface text-[14px] font-semibold">{a.title}</p>
+                          <p className="text-on-surface-muted text-[12px] truncate">{a.sub}</p>
+                        </div>
+                        <span className="text-on-surface-muted text-[12px] shrink-0">{a.time}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </main>
     </>
   );
 }

@@ -172,6 +172,83 @@ body {
   background-clip: text;
 }
 
+/* ── One-shot hero entrance ── */
+@keyframes hero-rise {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes hero-line-rise {
+  from {
+    opacity: 0;
+    transform: translateY(105%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes hero-gradient-slide {
+  from { background-position: 0% 50%; }
+  to { background-position: 220% 50%; }
+}
+
+.hero-line {
+  display: block;
+  overflow: hidden;
+}
+
+.hero-line-inner {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(105%);
+}
+
+.hero-line-inner.is-visible {
+  animation: hero-line-rise 950ms cubic-bezier(.16, 1, .3, 1) var(--hero-delay) both;
+}
+
+.hero-entrance-item {
+  opacity: 0;
+  transform: translateY(16px);
+}
+
+.hero-entrance-item.is-visible {
+  animation: hero-rise 700ms cubic-bezier(.16, 1, .3, 1) var(--hero-delay) both;
+}
+
+.hero-gradient-animated {
+  background-size: 220%;
+  animation: none;
+}
+
+.hero-gradient-animated.is-visible {
+  animation:
+    hero-line-rise 950ms cubic-bezier(.16, 1, .3, 1) var(--hero-delay) both,
+    hero-gradient-slide 9s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-line-inner,
+  .hero-entrance-item {
+    opacity: 1;
+    transform: none;
+  }
+
+  .hero-line-inner.is-visible,
+  .hero-entrance-item.is-visible,
+  .hero-gradient-animated.is-visible {
+    animation: none;
+  }
+}
+
 .text-gradient-cta {
   background: linear-gradient(135deg, #a78bfa, #f472b6, #22d3ee);
   -webkit-background-clip: text;
@@ -185,11 +262,23 @@ body {
   100% { transform: translateX(-50%); }
 }
 
-.animate-marquee {
-  animation: marquee 30s linear infinite;
+.marquee-viewport {
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+  mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
 }
 
-.animate-marquee:hover {
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee 34s linear infinite;
+}
+
+.marquee-set {
+  display: flex;
+  flex: none;
+}
+
+.marquee-track:hover {
   animation-play-state: paused;
 }
 
@@ -202,6 +291,86 @@ body {
 .card-glow:hover {
   box-shadow: 0 0 0 1px rgba(167, 139, 250, 0.2),
               0 8px 32px rgba(167, 139, 250, 0.1);
+}
+
+/* ── Cursor-following panel glow ── */
+.cursor-glow-panel {
+  --mx: 50%;
+  --my: 50%;
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+
+.cursor-glow-panel::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(340px circle at var(--mx) var(--my), color-mix(in srgb, var(--panel-hue) 28%, transparent), transparent 70%);
+  transition: opacity 500ms ease;
+}
+
+.cursor-glow-panel:hover::before {
+  opacity: 1;
+}
+
+.cursor-glow-panel > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* ── Dashboard skill bars ── */
+.dashboard-skill-bar-fill {
+  width: 100%;
+  background: var(--bar-color);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 1300ms cubic-bezier(.16, 1, .3, 1);
+}
+
+.dashboard-skill-bars.go .dashboard-skill-bar-fill {
+  transform: scaleX(var(--p));
+}
+
+/* ── Dashboard streak heatmap ── */
+.streak-heatmap {
+  display: grid;
+  grid-template-columns: repeat(22, 14px);
+  grid-template-rows: repeat(7, 14px);
+  grid-auto-flow: column;
+  gap: 3px;
+  width: max-content;
+}
+
+.streak-heatmap-cell {
+  width: 14px;
+  height: 14px;
+  border-radius: 2px;
+  opacity: 0;
+  transform: scale(.3);
+  transition: transform 320ms cubic-bezier(.34, 1.56, .64, 1) var(--cell-delay), opacity 320ms cubic-bezier(.34, 1.56, .64, 1) var(--cell-delay), outline-color 150ms ease;
+}
+
+.streak-heatmap.go .streak-heatmap-cell {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.streak-heatmap-cell.intensity-0 { background: color-mix(in srgb, var(--color-outline) 20%, transparent); }
+.streak-heatmap-cell.intensity-1 { background: #FF6B3533; }
+.streak-heatmap-cell.intensity-2 { background: #FF6B3566; }
+.streak-heatmap-cell.intensity-3 { background: #FF6B3599; }
+.streak-heatmap-cell.intensity-4 {
+  background: #FF6B35;
+  box-shadow: 0 0 9px rgba(255, 107, 53, .8);
+}
+
+.streak-heatmap-cell:hover {
+  outline: 1px solid #FF6B35;
+  outline-offset: 1px;
 }
 
 /* ── Step number circles ── */
@@ -218,6 +387,91 @@ body {
   flex-shrink: 0;
 }
 
+/* ── Verification pipeline rail ── */
+.pipeline-rail__markers {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-space-xl);
+}
+
+.pipeline-rail__track {
+  position: absolute;
+  z-index: 0;
+  top: 50%;
+  right: 20px;
+  left: 20px;
+  height: 3px;
+  border-radius: 9999px;
+  background: linear-gradient(90deg, #f472b6, #34d399, #60a5fa, #fbbf24, #f87171);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 1400ms ease;
+}
+
+.pipeline-marker {
+  position: relative;
+  z-index: 1;
+  opacity: 0;
+  transform: scale(.6);
+  transition: transform 420ms cubic-bezier(.34, 1.56, .64, 1) var(--stage-delay), opacity 420ms cubic-bezier(.34, 1.56, .64, 1) var(--stage-delay);
+}
+
+.pipeline-rail.is-visible .pipeline-rail__track {
+  transform: scaleX(1);
+}
+
+.pipeline-rail.is-visible .pipeline-marker {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.pipeline-marker__number {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--stage-color);
+  color: var(--color-surface);
+  font-family: "Plus Jakarta Sans", sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.pipeline-stage-card {
+  background: var(--color-surface-container);
+  border: 1px solid color-mix(in srgb, var(--color-outline) 40%, transparent);
+  box-shadow: 0 0 0 1px rgba(167, 139, 250, 0.1), 0 4px 24px rgba(167, 139, 250, 0.05);
+  transition: transform 240ms ease, border-color 240ms ease, background-color 240ms ease, box-shadow 240ms ease;
+}
+
+.pipeline-stage-card:hover {
+  transform: translateY(-8px);
+  border-color: color-mix(in srgb, var(--stage-color) 70%, transparent);
+  background: color-mix(in srgb, var(--stage-color) 12%, var(--color-surface-container));
+  box-shadow: 0 10px 30px color-mix(in srgb, var(--stage-color) 15%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pipeline-rail__track {
+    transform: scaleX(1);
+    transition: none;
+  }
+
+  .pipeline-marker {
+    opacity: 1;
+    transform: scale(1);
+    transition: none;
+  }
+
+  .pipeline-stage-card {
+    transition: none;
+  }
+}
+
 /* ── Verification card live animation ── */
 @keyframes pulse-border {
   0%, 100% { border-color: rgba(244, 114, 182, 0.4); }
@@ -226,6 +480,85 @@ body {
 
 .pulse-border {
   animation: pulse-border 2s ease-in-out infinite;
+}
+
+/* ── Dashboard Stage Stepper ── */
+@keyframes stage-breathe {
+  0% {
+    box-shadow: 0 0 0 0 var(--stage-color);
+  }
+  100% {
+    box-shadow: 0 0 0 9px transparent;
+  }
+}
+
+.stage-card-active {
+  animation: stage-breathe 2600ms ease infinite;
+}
+
+.stage-card-done {
+  background-color: color-mix(in srgb, var(--stage-color) 12%, var(--color-surface-container-high));
+}
+
+/* ── Live verification chain ── */
+@keyframes streak-flame-flicker {
+  0% { transform: scale(1) rotate(-3deg); }
+  100% { transform: scale(1.1) rotate(3deg); }
+}
+
+.streak-flame {
+  transform-origin: bottom center;
+  animation: streak-flame-flicker 1500ms ease-in-out infinite alternate;
+}
+
+.verification-row {
+  background: var(--color-surface-container-low);
+  border: 1px solid transparent;
+  transition: background-color 300ms ease, border-color 300ms ease;
+}
+
+.verification-row-live {
+  background: var(--color-surface-container-high);
+  border-color: color-mix(in srgb, var(--stage-color, var(--color-secondary)) 60%, transparent);
+}
+
+.verification-icon {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  color: var(--color-surface);
+  background: var(--color-outline);
+  font-family: "Plus Jakarta Sans", sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  transition: background-color 300ms ease, box-shadow 300ms ease, transform 300ms ease;
+}
+
+.verification-icon.is-live,
+.verification-icon.live {
+  background: var(--stage-color);
+  transform: scale(1.1);
+  box-shadow: 0 0 0 6px color-mix(in srgb, var(--stage-color) 35%, transparent);
+}
+
+.verification-icon.done {
+  background: color-mix(in srgb, var(--stage-color) 75%, var(--color-surface));
+}
+
+.verification-status-live {
+  color: var(--stage-color);
+}
+
+.verification-status-done {
+  color: var(--color-success);
+}
+
+.verification-status-queued {
+  color: var(--color-on-surface-muted);
 }
 
 /* ── Stat number gradient ── */
@@ -255,6 +588,81 @@ body {
     rgba(167, 139, 250, 0.08) 40%,
     transparent 70%
   );
+}
+
+/* ── CSS-only aurora background ── */
+@keyframes aurora-drift {
+  0%, 100% {
+    transform: translate3d(0, 0, 0) scale(0.88);
+  }
+  25% {
+    transform: translate3d(6vw, -5vh, 0) scale(1.18);
+  }
+  50% {
+    transform: translate3d(-4vw, 4vh, 0) scale(0.98);
+  }
+  75% {
+    transform: translate3d(3vw, 5vh, 0) scale(1.12);
+  }
+}
+
+.aurora-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.aurora-orb {
+  position: absolute;
+  width: min(26rem, 38vw);
+  aspect-ratio: 1;
+  border-radius: 9999px;
+  filter: blur(70px);
+  mix-blend-mode: screen;
+  opacity: 0.5;
+  animation: aurora-drift 22s ease-in-out infinite;
+}
+
+.aurora-violet {
+  top: -12rem;
+  left: -8rem;
+  background: #7c3aed;
+}
+
+.aurora-magenta {
+  top: 12%;
+  right: -12rem;
+  background: #ec4899;
+  animation-delay: -6s;
+}
+
+.aurora-cyan {
+  bottom: -16rem;
+  left: 22%;
+  background: #06b6d4;
+  animation-delay: -12s;
+}
+
+.aurora-amber {
+  right: 18%;
+  bottom: -18rem;
+  background: #f59e0b;
+  animation-delay: -3s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aurora-orb {
+    animation: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .aurora-orb {
+    width: min(18rem, 48vw);
+  }
 }
 
 /* ── Smooth scroll ── */

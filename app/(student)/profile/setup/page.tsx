@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import Navbar from '@/components/Navbar';
 
 import { createClient } from '@/lib/supabase/server';
 
@@ -13,8 +12,7 @@ export default async function StudentProfilePage() {
 
   return (
     <>
-      <Navbar activePath="/profile/setup" />
-      <main className="w-full pt-20 bg-surface min-h-[calc(100vh-80px)]"><div className="flex flex-col w-full">
+      <main className="w-full bg-surface min-h-screen pb-24"><div className="flex flex-col w-full">
 {/* Interactive Toast Notification Element */}
 <div className="fixed bottom-6 right-6 z-50 transform translate-y-20 opacity-0 pointer-events-none transition-all duration-300 flex items-center gap-space-xs bg-inverse-surface text-inverse-on-surface px-space-md py-space-sm rounded-xl shadow-xl" id="copy-toast">
 <span className="material-symbols-outlined text-primary-fixed" style={{fontVariationSettings:'"FILL" 1'}}>check_circle</span>

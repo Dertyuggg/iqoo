@@ -1,4 +1,3 @@
-import Navbar from '@/components/Navbar';
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import EditProfileForm from './EditProfileForm';
@@ -19,8 +18,7 @@ export default async function EditProfilePage() {
 
   return (
     <>
-      <Navbar activePath="/profile/edit" />
-      <main className="w-full pt-24 bg-surface min-h-[calc(100vh-80px)]">
+      <main className="w-full bg-surface min-h-screen pb-24">
         <div className="max-w-2xl mx-auto px-gutter-mobile lg:px-gutter-desktop">
           <h1 className="font-headline-lg text-headline-lg font-bold text-on-surface mb-space-lg">
             Edit Profile
