@@ -6,16 +6,20 @@ export async function GET(request: Request) {
   const code = searchParams.get('code')
   const next = searchParams.get('next') ?? '/dashboard'
 
-  // Determine the correct base URL for redirects (handles proxies/deployments)
-  const forwardedHost = request.headers.get('x-forwarded-host')
-  const forwardedProto = request.headers.get('x-forwarded-proto') || 'https'
+  // Determine the correct base URL for redirects
+  // In development: always use the request origin (localhost)
+  // In production: respect forwarded headers or NEXT_PUBLIC_SITE_URL
   const isLocalEnv = process.env.NODE_ENV === 'development'
-  
+
   let baseUrl = origin
-  if (forwardedHost) {
-    baseUrl = `${forwardedProto}://${forwardedHost}`
-  } else if (process.env.NEXT_PUBLIC_SITE_URL) {
-    baseUrl = process.env.NEXT_PUBLIC_SITE_URL
+  if (!isLocalEnv) {
+    const forwardedHost = request.headers.get('x-forwarded-host')
+    const forwardedProto = request.headers.get('x-forwarded-proto') || 'https'
+    if (forwardedHost) {
+      baseUrl = `${forwardedProto}://${forwardedHost}`
+    } else if (process.env.NEXT_PUBLIC_SITE_URL) {
+      baseUrl = process.env.NEXT_PUBLIC_SITE_URL
+    }
   }
 
   if (code) {
