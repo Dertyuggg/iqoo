@@ -1,6 +1,3 @@
-import Link from 'next/link';
-import Image from 'next/image';
-
 export default function Page() {
   return (
     <>
@@ -699,7 +696,7 @@ export default function Page() {
 <span className="font-label-sm text-label-sm text-outline">1h ago</span>
 </div>
 <p className="font-body-sm text-body-sm text-on-surface-variant">
-            “Ananya's Redis replication PR benchmarks show deep concurrency intuition. Recommend prioritizing her tomorrow afternoon.”
+            &ldquo;Ananya&apos;s Redis replication PR benchmarks show deep concurrency intuition. Recommend prioritizing her tomorrow afternoon.&rdquo;
           </p>
 </div>
 </div>
