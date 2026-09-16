@@ -1,6 +1,6 @@
 export async function verifyGithubRepo(repoUrl: string) {
   // 1. Parse URL
-  const match = repoUrl.match(/github\.com\/([^/]+)\/([^/]+)/);
+  const match = repoUrl.match(/github\.com\/([A-Za-z0-9-]+)\/([A-Za-z0-9_.-]+)/);
   if (!match) {
     throw new Error('Invalid GitHub URL');
   }
