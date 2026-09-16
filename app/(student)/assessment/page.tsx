@@ -1,8 +1,49 @@
 'use client';
 
 import Link from 'next/link';
+import { useState, useRef, useCallback, useEffect } from 'react';
+import { motion, AnimatePresence, useAnimation } from 'framer-motion';
 
 export default function SkillAssessmentPage() {
+  const [pasteCount, setPasteCount] = useState(0);
+  const [toastVisible, setToastVisible] = useState(false);
+  const toastTimeout = useRef<NodeJS.Timeout | null>(null);
+
+  const editorControls = useAnimation();
+  const numberControls = useAnimation();
+  const integrityScore = Math.max(0, 100 - pasteCount * 6);
+
+  // Clear timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (toastTimeout.current) clearTimeout(toastTimeout.current);
+    };
+  }, []);
+
+  const handlePaste = useCallback((e: React.ClipboardEvent) => {
+    e.preventDefault();
+    setPasteCount((prev) => prev + 1);
+    
+    // Shake editor
+    editorControls.start({
+      x: [-3, 6, -6, 0],
+      transition: { duration: 0.42 }
+    });
+    
+    // Flash paste number
+    numberControls.start({
+      scale: [1.5, 1],
+      color: ['#f87171', '#f0eef8'],
+      transition: { duration: 0.3 }
+    });
+
+    // Show toast
+    setToastVisible(true);
+    if (toastTimeout.current) clearTimeout(toastTimeout.current);
+    toastTimeout.current = setTimeout(() => {
+      setToastVisible(false);
+    }, 2600);
+  }, [editorControls, numberControls]);
   return (
     <>
       <main className="w-full bg-surface min-h-screen pb-24 flex flex-col">
@@ -92,7 +133,11 @@ export default function SkillAssessmentPage() {
           {/* Center Column: Editor & Tests */}
           <div className="lg:col-span-6 flex flex-col gap-4">
             {/* Editor Area */}
-            <div className="bg-surface-container border border-outline/30 rounded-2xl flex flex-col flex-1 shadow-sm overflow-hidden min-h-[300px]">
+            <motion.div 
+              animate={editorControls}
+              onPaste={handlePaste}
+              className="bg-surface-container border border-outline/30 rounded-2xl flex flex-col flex-1 shadow-sm overflow-hidden min-h-[300px]"
+            >
               {/* Editor Header */}
               <div className="flex items-center justify-between px-4 py-2 bg-surface-container-high border-b border-outline/30">
                 <span className="text-on-surface-muted text-[12px] font-mono">solution.py</span>
@@ -100,12 +145,12 @@ export default function SkillAssessmentPage() {
               </div>
               
               {/* Editor Code (Static Mockup) */}
-              <div className="flex-1 p-4 font-mono text-[13px] leading-loose overflow-y-auto">
+              <div className="flex-1 p-4 font-mono text-[13px] leading-loose overflow-y-auto outline-none" tabIndex={0} suppressContentEditableWarning contentEditable>
                 <div className="flex">
-                  <div className="w-8 text-on-surface-muted/50 text-right pr-4 select-none flex flex-col gap-1">
+                  <div className="w-8 text-on-surface-muted/50 text-right pr-4 select-none flex flex-col gap-1" contentEditable={false}>
                     <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
                   </div>
-                  <div className="flex-1 text-on-surface-variant flex flex-col gap-1">
+                  <div className="flex-1 text-on-surface-variant flex flex-col gap-1 pointer-events-none">
                     <div className="text-on-surface-muted"># sort by start, then extend the last window while it overlaps</div>
                     <div><span className="text-step-4">def</span> <span className="text-step-3">merge</span>(windows):</div>
                     <div className="pl-6">windows.sort()</div>
@@ -119,7 +164,7 @@ export default function SkillAssessmentPage() {
                   </div>
                 </div>
               </div>
-            </div>
+            </motion.div>
 
             {/* Test Actions */}
             <div className="flex items-center justify-between mt-2">
@@ -182,15 +227,29 @@ export default function SkillAssessmentPage() {
             {/* Integrity Card */}
             <div className="bg-surface-container border border-outline/30 rounded-2xl p-5 shadow-sm">
               <h3 className="text-on-surface text-[14px] font-bold mb-4">Integrity</h3>
-              <div className="text-[48px] font-extrabold text-step-2 leading-none mb-4">100</div>
+              <div className="text-[48px] font-extrabold text-step-2 leading-none mb-4">
+                {integrityScore}
+              </div>
               
               {/* Gradient bar */}
-              <div className="h-1.5 w-full rounded-full bg-gradient-to-r from-step-4 via-warning to-step-2 mb-6"></div>
+              <div className="h-1.5 w-full rounded-full bg-outline/20 mb-6 relative overflow-hidden">
+                <motion.div 
+                  className="absolute inset-y-0 left-0 bg-gradient-to-r from-step-4 via-warning to-step-2 origin-left"
+                  animate={{ scaleX: integrityScore / 100 }}
+                  transition={{ duration: 0.7, ease: "easeOut" }}
+                  style={{ width: '100%' }}
+                />
+              </div>
 
               <div className="space-y-3">
                 <div className="flex justify-between items-center text-[12px]">
                   <span className="text-on-surface-muted">Paste attempts</span>
-                  <span className="text-on-surface font-mono">0</span>
+                  <motion.span 
+                    animate={numberControls}
+                    className="text-on-surface font-mono inline-block origin-right"
+                  >
+                    {pasteCount}
+                  </motion.span>
                 </div>
                 <div className="flex justify-between items-center text-[12px]">
                   <span className="text-on-surface-muted">Tab switches</span>
@@ -235,6 +294,26 @@ export default function SkillAssessmentPage() {
             
           </div>
         </div>
+
+        {/* Toast */}
+        <AnimatePresence>
+          {toastVisible && (
+            <motion.div
+              initial={{ opacity: 0, y: 26 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 10, transition: { duration: 0.2 } }}
+              transition={{ type: 'spring', duration: 0.45 }}
+              className="fixed bottom-8 left-1/2 -translate-x-1/2 bg-error text-white px-6 py-3 rounded-xl shadow-lg font-semibold z-50 flex items-center gap-2 text-[14px]"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+              </svg>
+              Paste blocked. Integrity score reduced.
+            </motion.div>
+          )}
+        </AnimatePresence>
       </main>
     </>
   );
