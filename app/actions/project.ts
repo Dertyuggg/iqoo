@@ -45,6 +45,7 @@ export async function submitProject(formData: FormData) {
   
   const headersList = await headers();
   const host = headersList.get('host');
+  const cookieHeader = headersList.get('cookie');
   const protocol = process.env.NODE_ENV === 'development' ? 'http' : 'https';
   const baseUrl = `${protocol}://${host}`;
   
@@ -53,6 +54,7 @@ export async function submitProject(formData: FormData) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        ...(cookieHeader ? { Cookie: cookieHeader } : {}),
       },
       body: JSON.stringify({
         submissionId: submission.id,
