@@ -12,7 +12,7 @@ interface NavbarProps {
 export default function Navbar({ activePath = '/' }: NavbarProps) {
   const [user, setUser] = useState<any>(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [supabase] = useState(() => createClient());
+  const supabase = createClient();
   const router = useRouter();
 
   useEffect(() => {
@@ -29,7 +29,7 @@ export default function Navbar({ activePath = '/' }: NavbarProps) {
     return () => {
       authListener.subscription.unsubscribe();
     };
-  }, [supabase]);
+  }, []);
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();

@@ -15,7 +15,7 @@ const navLinks = [
 export default function BottomNav() {
   const pathname = usePathname();
   const [user, setUser] = useState<any>(null);
-  const [supabase] = useState(() => createClient());
+  const supabase = createClient();
 
   useEffect(() => {
     const getUser = async () => {
@@ -31,7 +31,7 @@ export default function BottomNav() {
     return () => {
       authListener.subscription.unsubscribe();
     };
-  }, [supabase]);
+  }, []);
 
   return (
     <nav className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50">

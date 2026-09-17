@@ -4,14 +4,84 @@ import Link from 'next/link';
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence, useAnimation } from 'framer-motion';
 
+const TEST_CASES = [
+  { id: 0, title: "Overlapping pairs merge", time: "2 ms", passed: true },
+  { id: 1, title: "Already disjoint stays unchanged", time: "1 ms", passed: true },
+  { id: 2, title: "Windows touching at an endpoint", time: "1 ms", passed: true },
+  { id: 3, title: "Empty input returns an empty list", time: "TypeError", passed: false },
+  { id: 4, title: "10,000 windows under 200 ms", time: "88 ms", passed: true },
+];
+
 export default function SkillAssessmentPage() {
   const [pasteCount, setPasteCount] = useState(0);
+  const [tabSwitchCount, setTabSwitchCount] = useState(0);
   const [toastVisible, setToastVisible] = useState(false);
   const toastTimeout = useRef<NodeJS.Timeout | null>(null);
 
   const editorControls = useAnimation();
   const numberControls = useAnimation();
-  const integrityScore = Math.max(0, 100 - pasteCount * 6);
+  const integrityScore = Math.max(0, 100 - pasteCount * 6 - tabSwitchCount * 3);
+
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        setTabSwitchCount((prev) => prev + 1);
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () => document.removeEventListener("visibilitychange", handleVisibilityChange);
+  }, []);
+
+  // Test Runner State
+  const [testStatus, setTestStatus] = useState<'idle' | 'running' | 'done'>('idle');
+  const [revealedTests, setRevealedTests] = useState<number[]>([]);
+  const [testToastVisible, setTestToastVisible] = useState(false);
+
+  const handleRunTests = () => {
+    if (testStatus === 'running') return;
+    setTestStatus('running');
+    setRevealedTests([]);
+    setTestToastVisible(false);
+
+    const testsCount = 5;
+    for (let i = 0; i < testsCount; i++) {
+      setTimeout(() => {
+        setRevealedTests((prev) => [...prev, i]);
+      }, i * 380);
+    }
+
+    setTimeout(() => {
+      setTestStatus('done');
+      setTestToastVisible(true);
+      setTimeout(() => setTestToastVisible(false), 4000);
+    }, 2200);
+  };
+
+  const TOTAL_TIME = 1800;
+  const [timeLeft, setTimeLeft] = useState(994); // 16:34
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTimeLeft((prev) => Math.max(0, prev - 1));
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const pct = timeLeft / TOTAL_TIME;
+  const dashoffset = 126 * (1 - pct);
+  
+  let colorStr = '#34d399';
+  if (pct < 0.15) {
+    colorStr = '#ec4899';
+  } else if (pct <= 0.34) {
+    colorStr = '#fbbf24';
+  }
+
+  const formatTime = (seconds: number) => {
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    return `${m}:${s.toString().padStart(2, '0')}`;
+  };
 
   // Clear timeout on unmount
   useEffect(() => {
@@ -63,24 +133,57 @@ export default function SkillAssessmentPage() {
             <div className="flex items-center gap-4 border-l border-outline/30 pl-6">
               <span className="text-on-surface-variant text-[13px] font-medium">Problem 3 of 6</span>
               <div className="flex gap-1.5">
-                <div className="h-1.5 w-6 rounded-full bg-success"></div>
-                <div className="h-1.5 w-6 rounded-full bg-success"></div>
-                <div className="h-1.5 w-6 rounded-full bg-warning"></div>
-                <div className="h-1.5 w-6 rounded-full bg-outline/20"></div>
-                <div className="h-1.5 w-6 rounded-full bg-outline/20"></div>
-                <div className="h-1.5 w-6 rounded-full bg-outline/20"></div>
+                {[1, 2, 3, 4, 5, 6].map((step) => {
+                  const status = step < 3 ? 'completed' : step === 3 ? 'current' : 'upcoming';
+                  return (
+                    <motion.div
+                      key={step}
+                      initial={false}
+                      animate={{ width: status === 'current' ? 40 : 26 }}
+                      transition={{ duration: 0.4 }}
+                      className={`h-[6px] rounded-full ${
+                        status === 'completed'
+                          ? 'bg-success'
+                          : status === 'current'
+                          ? 'bg-warning'
+                          : 'bg-outline/20'
+                      }`}
+                    />
+                  );
+                })}
               </div>
             </div>
           </div>
 
           <div className="flex items-center gap-3">
-            {/* Timer circle icon placeholder */}
-            <svg width="24" height="24" viewBox="0 0 24 24" className="text-step-2 -rotate-90">
-              <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" strokeWidth="3" strokeDasharray="63" strokeDashoffset="15" className="opacity-20" />
-              <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" strokeWidth="3" strokeDasharray="63" strokeDashoffset="15" />
+            {pct < 0.15 && (
+              <style>{`
+                @keyframes timer-pulse {
+                  0%, 100% { opacity: 1; }
+                  50% { opacity: 0.45; }
+                }
+              `}</style>
+            )}
+            <svg width="44" height="44" viewBox="0 0 44 44" className="-rotate-90 shrink-0">
+              <circle cx="22" cy="22" r="20" fill="none" stroke="currentColor" strokeWidth="3" className="opacity-20 text-outline-variant" />
+              <circle 
+                cx="22" cy="22" r="20" 
+                fill="none" 
+                stroke={colorStr}
+                strokeWidth="3" 
+                strokeDasharray="126" 
+                strokeDashoffset={dashoffset}
+                strokeLinecap="round"
+                style={{
+                  transition: 'stroke-dashoffset 1s linear, stroke 0.6s ease',
+                  animation: pct < 0.15 ? 'timer-pulse 0.9s ease-in-out infinite' : 'none'
+                }}
+              />
             </svg>
             <div className="flex flex-col">
-              <span className="text-on-surface text-[16px] font-extrabold leading-none tracking-tight">16:34</span>
+              <span className="text-on-surface text-[16px] font-extrabold leading-none tracking-tight">
+                {formatTime(timeLeft)}
+              </span>
               <span className="text-on-surface-muted text-[10px]">left in this section</span>
             </div>
           </div>
@@ -169,8 +272,12 @@ export default function SkillAssessmentPage() {
             {/* Test Actions */}
             <div className="flex items-center justify-between mt-2">
               <div className="flex gap-3">
-                <button className="px-6 py-2 rounded-full border border-outline/40 text-on-surface text-[14px] font-semibold hover:bg-surface-container transition-colors shadow-sm">
-                  Run tests
+                <button 
+                  onClick={handleRunTests}
+                  disabled={testStatus === 'running'}
+                  className="px-6 py-2 rounded-full border border-outline/40 text-on-surface text-[14px] font-semibold hover:bg-surface-container transition-colors shadow-sm disabled:opacity-50"
+                >
+                  {testStatus === 'running' ? 'Running...' : 'Run tests'}
                 </button>
                 <button className="px-6 py-2 rounded-full bg-on-surface text-surface text-[14px] font-bold hover:bg-on-surface/90 transition-colors shadow-sm">
                   Submit and continue
@@ -182,42 +289,49 @@ export default function SkillAssessmentPage() {
             </div>
 
             {/* Test Results */}
-            <div className="flex flex-col gap-2 mt-2">
-              <div className="flex items-center justify-between p-3 rounded-xl bg-surface-container-high/30 border border-outline/10">
-                <div className="flex items-center gap-3">
-                  <span className="text-step-2 text-[14px]">✓</span>
-                  <span className="text-on-surface-variant text-[13px]">Overlapping pairs merge</span>
-                </div>
-                <span className="text-on-surface-muted text-[12px] font-mono">2 ms</span>
-              </div>
-              <div className="flex items-center justify-between p-3 rounded-xl bg-surface-container-high/30 border border-outline/10">
-                <div className="flex items-center gap-3">
-                  <span className="text-step-2 text-[14px]">✓</span>
-                  <span className="text-on-surface-variant text-[13px]">Already disjoint stays unchanged</span>
-                </div>
-                <span className="text-on-surface-muted text-[12px] font-mono">1 ms</span>
-              </div>
-              <div className="flex items-center justify-between p-3 rounded-xl bg-surface-container-high/30 border border-outline/10">
-                <div className="flex items-center gap-3">
-                  <span className="text-step-2 text-[14px]">✓</span>
-                  <span className="text-on-surface-variant text-[13px]">Windows touching at an endpoint</span>
-                </div>
-                <span className="text-on-surface-muted text-[12px] font-mono">1 ms</span>
-              </div>
-              <div className="flex items-center justify-between p-3 rounded-xl bg-surface-container-high/30 border border-error/20 bg-error/5">
-                <div className="flex items-center gap-3">
-                  <span className="text-error text-[12px] font-bold">✕</span>
-                  <span className="text-on-surface text-[13px]">Empty input returns an empty list</span>
-                </div>
-                <span className="text-error/80 text-[12px] font-mono">TypeError</span>
-              </div>
-              <div className="flex items-center justify-between p-3 rounded-xl bg-surface-container-high/30 border border-outline/10">
-                <div className="flex items-center gap-3">
-                  <span className="text-step-2 text-[14px]">✓</span>
-                  <span className="text-on-surface-variant text-[13px]">10,000 windows under 200 ms</span>
-                </div>
-                <span className="text-on-surface-muted text-[12px] font-mono">88 ms</span>
-              </div>
+            <div className="flex flex-col gap-2 mt-2 relative">
+              {TEST_CASES.map((tc, index) => {
+                const isRevealed = revealedTests.includes(index);
+                
+                return (
+                  <motion.div
+                    key={tc.id}
+                    initial={false}
+                    animate={{
+                      opacity: isRevealed ? 1 : 0.4,
+                      y: isRevealed ? 0 : 8,
+                    }}
+                    transition={{ duration: 0.4 }}
+                    className={`flex items-center justify-between p-3 rounded-xl border transition-colors ${
+                      isRevealed
+                        ? tc.passed 
+                          ? 'bg-surface-container-high/30 border-success/30'
+                          : 'bg-surface-container-high/30 border-[#ec4899]/30 bg-[#ec4899]/5'
+                        : 'bg-surface-container-high/10 border-outline/10'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      {isRevealed ? (
+                        tc.passed ? (
+                          <span className="text-success text-[14px]">✓</span>
+                        ) : (
+                          <span className="text-[#ec4899] text-[12px] font-bold">✕</span>
+                        )
+                      ) : (
+                        <span className="text-on-surface-muted text-[14px]">-</span>
+                      )}
+                      <span className={isRevealed && !tc.passed ? "text-on-surface text-[13px]" : "text-on-surface-variant text-[13px]"}>
+                        {tc.title}
+                      </span>
+                    </div>
+                    {isRevealed && (
+                      <span className={`${tc.passed ? 'text-on-surface-muted' : 'text-[#ec4899]/80'} text-[12px] font-mono`}>
+                        {tc.time}
+                      </span>
+                    )}
+                  </motion.div>
+                );
+              })}
             </div>
           </div>
 
@@ -253,7 +367,7 @@ export default function SkillAssessmentPage() {
                 </div>
                 <div className="flex justify-between items-center text-[12px]">
                   <span className="text-on-surface-muted">Tab switches</span>
-                  <span className="text-on-surface font-mono">0</span>
+                  <span className="text-on-surface font-mono">{tabSwitchCount}</span>
                 </div>
                 <div className="flex justify-between items-center text-[12px]">
                   <span className="text-on-surface-muted">Typing rhythm</span>
@@ -295,7 +409,7 @@ export default function SkillAssessmentPage() {
           </div>
         </div>
 
-        {/* Toast */}
+        {/* Toasts */}
         <AnimatePresence>
           {toastVisible && (
             <motion.div
@@ -311,6 +425,21 @@ export default function SkillAssessmentPage() {
                 <line x1="12" y1="16" x2="12.01" y2="16"></line>
               </svg>
               Paste blocked. Integrity score reduced.
+            </motion.div>
+          )}
+          {testToastVisible && (
+            <motion.div
+              initial={{ opacity: 0, y: 26 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 10, transition: { duration: 0.2 } }}
+              transition={{ type: 'spring', duration: 0.45 }}
+              className="fixed bottom-8 left-1/2 -translate-x-1/2 bg-surface-container-highest text-on-surface px-6 py-3 rounded-xl shadow-lg font-semibold z-50 flex items-center gap-3 text-[14px] border border-outline/30"
+            >
+              <div className="flex items-center gap-2">
+                <span className="text-success">{TEST_CASES.filter(t => t.passed).length} passed</span>
+                <span className="text-outline-variant">•</span>
+                <span className="text-[#ec4899]">{TEST_CASES.filter(t => !t.passed).length} failed</span>
+              </div>
             </motion.div>
           )}
         </AnimatePresence>
