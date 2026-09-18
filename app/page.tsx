@@ -72,7 +72,7 @@ export default function LandingPage() {
               </div>
             </div>
             <span className="font-display text-[18px] text-on-surface font-extrabold tracking-tight">
-              Praman
+              TalentIQ
             </span>
           </Link>
 
@@ -284,7 +284,7 @@ export default function LandingPage() {
       <footer className="w-full border-t border-outline/30 bg-surface-dim">
         <div className="max-w-[1280px] mx-auto px-gutter-mobile lg:px-gutter-desktop py-6 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-on-surface-muted text-[14px]">
-            Praman — verified talent, wherever you studied.
+            TalentIQ — verified talent, wherever you studied.
           </p>
           <p className="text-on-surface-muted text-[13px]">
             Built at a 36-hour hackathon · Next.js + Supabase

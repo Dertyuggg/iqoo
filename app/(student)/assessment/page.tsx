@@ -127,7 +127,7 @@ export default function SkillAssessmentPage() {
                 <span className="w-2 h-2 rounded-[2px] bg-tertiary" />
                 <span className="w-2 h-2 rounded-[2px] bg-step-4" />
               </div>
-              <span className="text-on-surface text-[15px] font-extrabold tracking-tight">Praman</span>
+              <span className="text-on-surface text-[15px] font-extrabold tracking-tight">TalentIQ</span>
             </Link>
             
             <div className="flex items-center gap-4 border-l border-outline/30 pl-6">

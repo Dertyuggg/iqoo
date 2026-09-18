@@ -237,6 +237,7 @@ function PaneBasics({
           type="text"
           value={projectName}
           onChange={(e) => setProjectName(e.target.value)}
+          placeholder="Enter your project name"
           className="w-full bg-surface-container-high border border-outline/30 text-on-surface text-[15px] p-3 rounded-xl focus:outline-none focus:border-step-4 transition-colors"
         />
         <p className="text-on-surface-muted text-[12px]">
@@ -254,6 +255,7 @@ function PaneBasics({
           rows={3}
           value={description}
           onChange={(e) => setDescription(e.target.value.slice(0, 180))}
+          placeholder="Enter your project description"
           className="w-full bg-surface-container-high border border-outline/30 text-on-surface text-[15px] p-3 rounded-xl focus:outline-none focus:border-step-4 transition-colors resize-none"
         />
         <p className="text-on-surface-muted text-[12px]">
@@ -615,10 +617,8 @@ function PaneDemo() {
 // ── Main Page ──
 export default function SubmitProjectPage() {
   const [currentStep, setCurrentStep] = useState(1);
-  const [projectName, setProjectName] = useState('kisan-mandi-price');
-  const [description, setDescription] = useState(
-    "Farmers in Tiruchirappalli call a number and hear today's mandi price for their crop in Tamil."
-  );
+  const [projectName, setProjectName] = useState('');
+  const [description, setDescription] = useState('');
   const [repoUrl, setRepoUrl] = useState('');
   const [selectedTech, setSelectedTech] = useState<string[]>(['Next.js', 'Supabase', 'Twilio', 'Bhashini ASR']);
 
