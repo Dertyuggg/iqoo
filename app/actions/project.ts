@@ -65,6 +65,6 @@ export async function submitProject(formData: FormData) {
     console.error('Failed to trigger authenticity check:', err);
   }
 
-  revalidatePath('/dashboard');
-  redirect('/dashboard');
+  revalidatePath('/projects/my-projects');
+  redirect('/projects/my-projects');
 }

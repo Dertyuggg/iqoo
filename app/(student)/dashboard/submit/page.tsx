@@ -1,6 +1,12 @@
+'use client';
+
 import Image from 'next/image';
+import { useState } from 'react';
+import { submitProject } from '@/app/actions/project';
 
 export default function Page() {
+  const [domain, setDomain] = useState('fullstack');
+
   return (
     <>
       <header className="fixed top-0 left-0 right-0 z-50 bg-surface-container-lowest/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div className="h-20 max-w-[1280px] mx-auto px-gutter-mobile lg:px-gutter-desktop flex items-center justify-between gap-space-md"><div className="flex items-center gap-space-md shrink-0"><div className="flex items-center gap-space-xs"><img alt="Verified Talent Logo" className="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCP5WlsNqutCHNv5XNLaiNNDieidH4pQqzdDuD9F4QXZsyPPh7tnFzowqP7z47Xc2WiQwRZYkM8HSgFAaKw814eWNETxbuMNg_qz748XSXUMBi7UKWNGZ3IN52dCw-JOqFRZqlX5vdSuuZ37Abdv7XuSG_DlODxbGclyAWgl09wAGWCu_01jmCA0IIrwU6V1XPORkTCLL8CXck_nTWwZWXrO6eLGLNpGlFydCKvLgF257TirapeVF65hw"/><span className="font-title-md text-title-md text-on-surface font-bold tracking-tight">Verified Talent</span></div><span className="inline-flex items-center px-space-xs py-space-2xs rounded-full bg-surface-container-high text-primary font-badge text-badge tracking-wider uppercase">Beta • Student Platform</span></div><nav className="hidden xl:flex items-center gap-space-xs" data-active-classes="bg-surface-container text-primary font-semibold"><a className="px-space-sm py-space-xs rounded-lg font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors" data-path="explore" href="#">Home / Explore</a><a className="px-space-sm py-space-xs rounded-lg font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors" data-path="student-dashboard" href="#">Dashboard</a><a aria-current="page" className="px-space-sm py-space-xs rounded-lg transition-colors bg-surface-container text-primary font-semibold" data-path="submit-project" href="#">Submit Project</a><a className="px-space-sm py-space-xs rounded-lg font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors" data-path="skill-assessment" href="#">Skill Assessment</a><a className="px-space-sm py-space-xs rounded-lg font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors" data-path="public-profile" href="#">My Public Profile</a></nav><div className="flex items-center gap-space-sm shrink-0"><a className="hidden sm:inline-flex items-center px-space-md py-space-xs bg-primary text-on-primary hover:bg-primary-container rounded-xl font-label-lg text-label-lg transition-all shadow-[0_1px_3px_0_rgba(15,23,42,0.04)]" data-path="submit-project" href="#">Verify Skills</a><button aria-label="Notifications" className="relative p-space-xs rounded-full text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" type="button"><span className="material-symbols-outlined">notifications</span><span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-secondary-container"></span></button><div className="relative flex items-center shrink-0"><img alt="Profile" className="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAW3-9fqTZ98W61Z_Op-WXUHNscW_846wSe72SzOb9vFDaddtb04FrBBOoqbnSec84KyrdGT63zntEioS3_HIcPHIAvlpXZ9DeHcXLT_7NcNOl0ZIp0qDW5PeFjkq0xSID6mnJOfe7z7Hpgw4Ns9dwcAsXo8PdNgok4djd-7LJmkJg4eaUoanyurHknFr18OHTz284m_1o4wShIK5wN-XyKY0pK8gZhwg2FFxmbKwYIiIAVGDM2rhji9g"/><span className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-primary ring-2 ring-surface-container-lowest"></span></div></div></div></header><main className="w-full pt-20 bg-surface min-h-[calc(100vh-80px)]"><div className="flex flex-col w-full">
@@ -40,7 +46,7 @@ export default function Page() {
 {/* Asymmetric Main Layout (8 cols Form : 4 cols Helper Sidebar) */}
 <div className="grid grid-cols-1 lg:grid-cols-12 gap-space-xl items-start">
 {/* Primary Submission Form */}
-<form className="lg:col-span-8 flex flex-col gap-space-xl" id="project-submission-form" >
+<form className="lg:col-span-8 flex flex-col gap-space-xl" id="project-submission-form" action={submitProject}>
 {/* Step 1: Project Identity */}
 <div className="p-space-lg lg:p-space-xl rounded-xl bg-surface-container-lowest shadow-sm flex flex-col gap-space-md">
 <div className="flex items-center justify-between">
@@ -51,7 +57,7 @@ export default function Page() {
 <span className="font-badge text-badge text-outline uppercase tracking-wider">Required</span>
 </div>
 <div className="relative">
-<input className="w-full h-11 px-space-md bg-surface-container-low text-on-surface placeholder:text-outline rounded-lg font-body-md text-body-md focus:outline-none focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary transition-all" id="project-name" placeholder="e.g. DevPulse — Automated PR Review Bot" type="text" value="DevPulse — Automated PR Review Bot"/>
+<input className="w-full h-11 px-space-md bg-surface-container-low text-on-surface placeholder:text-outline rounded-lg font-body-md text-body-md focus:outline-none focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary transition-all" id="project-name" name="projectName" placeholder="e.g. DevPulse — Automated PR Review Bot" type="text" defaultValue="DevPulse — Automated PR Review Bot"/>
 </div>
 <p className="font-body-sm text-body-sm text-on-surface-variant">
             A clear title that hints at what your project actually accomplishes or tests.
@@ -74,7 +80,7 @@ export default function Page() {
 </div>
 <div className="relative flex items-center">
 <span className="material-symbols-outlined absolute left-space-sm text-outline">code</span>
-<input className="w-full h-11 pl-11 pr-space-md bg-surface-container-low text-on-surface rounded-lg font-body-md text-body-md focus:outline-none focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary transition-all" id="repo-url" placeholder="https://github.com/your-username/repo-name" type="url" value="https://github.com/ananya-dev/devpulse"/>
+<input className="w-full h-11 pl-11 pr-space-md bg-surface-container-low text-on-surface rounded-lg font-body-md text-body-md focus:outline-none focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary transition-all" id="repo-url" name="repoUrl" placeholder="https://github.com/your-username/repo-name" type="url" defaultValue="https://github.com/ananya-dev/devpulse"/>
 </div>
 </div>
 {/* Live Deployment URL */}
@@ -84,7 +90,7 @@ export default function Page() {
 </div>
 <div className="relative flex items-center">
 <span className="material-symbols-outlined absolute left-space-sm text-outline">language</span>
-<input className="w-full h-11 pl-11 pr-space-md bg-surface-container-low text-on-surface rounded-lg font-body-md text-body-md focus:outline-none focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary transition-all" id="demo-url" placeholder="https://devpulse.vercel.app" type="url" value="https://devpulse.vercel.app"/>
+<input className="w-full h-11 pl-11 pr-space-md bg-surface-container-low text-on-surface rounded-lg font-body-md text-body-md focus:outline-none focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary transition-all" id="demo-url" name="demoUrl" placeholder="https://devpulse.vercel.app" type="url" defaultValue="https://devpulse.vercel.app"/>
 </div>
 </div>
 </div>
@@ -98,22 +104,24 @@ export default function Page() {
 <div className="flex flex-col gap-space-xs">
 <span className="font-label-lg text-label-lg text-on-surface">Select Primary Engineering Domain</span>
 <div className="flex flex-wrap gap-space-xs mt-space-2xs" id="domain-pill-group">
-<button className="domain-pill px-space-md py-space-xs rounded-full font-label-lg text-label-lg transition-all bg-primary text-on-primary shadow-sm" data-domain="fullstack" type="button">
-                Full Stack
-              </button>
-<button className="domain-pill px-space-md py-space-xs rounded-full font-label-lg text-label-lg transition-all bg-surface-container text-on-surface hover:bg-surface-container-high" data-domain="backend" type="button">
-                Backend &amp; APIs
-              </button>
-<button className="domain-pill px-space-md py-space-xs rounded-full font-label-lg text-label-lg transition-all bg-surface-container text-on-surface hover:bg-surface-container-high" data-domain="frontend" type="button">
-                Frontend &amp; Mobile
-              </button>
-<button className="domain-pill px-space-md py-space-xs rounded-full font-label-lg text-label-lg transition-all bg-surface-container text-on-surface hover:bg-surface-container-high" data-domain="ml-data" type="button">
-                Machine Learning / Data
-              </button>
-<button className="domain-pill px-space-md py-space-xs rounded-full font-label-lg text-label-lg transition-all bg-surface-container text-on-surface hover:bg-surface-container-high" data-domain="systems" type="button">
-                Systems &amp; Infra
-              </button>
+{[
+  { id: 'fullstack', label: 'Full Stack' },
+  { id: 'backend', label: 'Backend & APIs' },
+  { id: 'frontend', label: 'Frontend & Mobile' },
+  { id: 'ml-data', label: 'Machine Learning / Data' },
+  { id: 'systems', label: 'Systems & Infra' }
+].map(d => (
+  <button 
+    key={d.id}
+    onClick={() => setDomain(d.id)}
+    className={`domain-pill px-space-md py-space-xs rounded-full font-label-lg text-label-lg transition-all shadow-sm ${domain === d.id ? 'bg-primary text-on-primary' : 'bg-surface-container text-on-surface hover:bg-surface-container-high'}`}
+    type="button"
+  >
+    {d.label}
+  </button>
+))}
 </div>
+<input type="hidden" name="domain" value={domain} />
 </div>
 {/* Interactive Tags Input */}
 <div className="flex flex-col gap-space-xs">
@@ -168,7 +176,7 @@ export default function Page() {
 <span className="material-symbols-outlined text-primary text-[18px] shrink-0 mt-0.5">lightbulb</span>
 <span><strong>Helpful prompt:</strong> Think beyond tutorial apps. E.g. "Helped our college club manage 500+ attendees without server crashes during festival registration."</span>
 </div>
-<textarea className="w-full p-space-md bg-surface-container-low text-on-surface placeholder:text-outline rounded-lg font-body-md text-body-md focus:outline-none focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary transition-all resize-y" id="problem-solved" placeholder="Explain the real motivation, user friction, or bottleneck you addressed..." rows={3}>Our campus open-source coding club had no reliable way to run automated lint checks and security audits on student PRs during our annual hackathon. Peer reviewers were spending 60% of their time pointing out style flaws instead of logic flaws.</textarea>
+<textarea className="w-full p-space-md bg-surface-container-low text-on-surface placeholder:text-outline rounded-lg font-body-md text-body-md focus:outline-none focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary transition-all resize-y" id="problem-solved" name="description" placeholder="Explain the real motivation, user friction, or bottleneck you addressed..." rows={3} defaultValue="Our campus open-source coding club had no reliable way to run automated lint checks and security audits on student PRs during our annual hackathon. Peer reviewers were spending 60% of their time pointing out style flaws instead of logic flaws."></textarea>
 </div>
 {/* Prompt 2 */}
 <div className="flex flex-col gap-space-xs">
@@ -178,7 +186,7 @@ export default function Page() {
 </label>
 <span className="font-badge text-badge text-primary bg-surface-container-high px-space-2xs rounded">Evaluates Depth</span>
 </div>
-<textarea className="w-full p-space-md bg-surface-container-low text-on-surface placeholder:text-outline rounded-lg font-body-md text-body-md focus:outline-none focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary transition-all resize-y" id="hurdle-solved" placeholder="Describe a concurrency bug, API rate-limit, database indexing challenge, or tough design decision..." rows={3}>Handling GitHub webhook event bursts without exhausting our free tier dyno. Implemented an asynchronous message worker queue with Redis &amp; Celery, debouncing consecutive commits so repetitive builds didn't choke API rate limits.</textarea>
+<textarea className="w-full p-space-md bg-surface-container-low text-on-surface placeholder:text-outline rounded-lg font-body-md text-body-md focus:outline-none focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary transition-all resize-y" id="hurdle-solved" name="hurdle" placeholder="Describe a concurrency bug, API rate-limit, database indexing challenge, or tough design decision..." rows={3} defaultValue="Handling GitHub webhook event bursts without exhausting our free tier dyno. Implemented an asynchronous message worker queue with Redis & Celery, debouncing consecutive commits so repetitive builds didn't choke API rate limits."></textarea>
 </div>
 {/* Prompt 3 */}
 <div className="flex flex-col gap-space-xs">
@@ -188,7 +196,7 @@ export default function Page() {
 </label>
 <span className="font-badge text-badge text-secondary bg-secondary-fixed px-space-2xs rounded">Product Vision</span>
 </div>
-<textarea className="w-full p-space-md bg-surface-container-low text-on-surface placeholder:text-outline rounded-lg font-body-md text-body-md focus:outline-none focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary transition-all resize-y" id="vision-next" placeholder="Add caching? Migrate to microservices? Train a local LLM fine-tune? Tell us where you'd steer the ship..." rows={2}>I would hook into tree-sitter AST parsing to suggest inline code patches directly rather than just emitting comment text warnings.</textarea>
+<textarea className="w-full p-space-md bg-surface-container-low text-on-surface placeholder:text-outline rounded-lg font-body-md text-body-md focus:outline-none focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary transition-all resize-y" id="vision-next" name="vision" placeholder="Add caching? Migrate to microservices? Train a local LLM fine-tune? Tell us where you'd steer the ship..." rows={2} defaultValue="I would hook into tree-sitter AST parsing to suggest inline code patches directly rather than just emitting comment text warnings."></textarea>
 </div>
 </div>
 {/* Step 5: Supporting Media & Architecture */}
