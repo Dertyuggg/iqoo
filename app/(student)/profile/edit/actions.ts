@@ -5,7 +5,10 @@ import { revalidatePath } from 'next/cache';
 
 interface ProfileData {
   full_name: string;
-  college: string;
+  contact_number: string;
+  linkedin_link: string;
+  github_link: string;
+  email_address: string;
   domain_interests: string[];
 }
 
@@ -23,7 +26,10 @@ export async function updateProfile(data: ProfileData) {
     .upsert({ 
       id: user.id,
       full_name: data.full_name,
-      college: data.college,
+      contact_number: data.contact_number,
+      linkedin_link: data.linkedin_link,
+      github_link: data.github_link,
+      email_address: data.email_address,
       domain_interests: data.domain_interests,
     });
 

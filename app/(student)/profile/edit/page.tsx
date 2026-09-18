@@ -27,7 +27,10 @@ export default async function EditProfilePage() {
             <EditProfileForm 
               initialData={{
                 full_name: student?.full_name || user.user_metadata?.full_name || '',
-                college: student?.college || '',
+                contact_number: student?.contact_number || '',
+                linkedin_link: student?.linkedin_link || '',
+                github_link: student?.github_link || '',
+                email_address: student?.email_address || user.email || '',
                 domain_interests: student?.domain_interests || [],
               }}
             />

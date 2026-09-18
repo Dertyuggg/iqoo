@@ -8,7 +8,8 @@ export default async function StudentProfilePage() {
   const { data: student } = user ? await supabase.from('students').select('*').eq('id', user.id).single() : { data: null };
   const fullName = student?.full_name || user?.user_metadata?.full_name || 'Anonymous User';
   const avatarUrl = user?.user_metadata?.avatar_url || 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + encodeURIComponent(fullName);
-  const collegeName = student?.college || 'Add your college';
+  const emailAddress = student?.email_address || user?.email || 'Add your email';
+  const contactNumber = student?.contact_number || 'Add your contact number';
 
   return (
     <>
@@ -61,18 +62,26 @@ export default async function StudentProfilePage() {
           </p>
 {/* Education & Location Metadata */}
 <div className="flex flex-wrap items-center gap-y-1 gap-x-space-md text-on-surface-variant font-body-sm text-body-sm pt-1">
-<span className="flex items-center gap-1">
-<span className="material-symbols-outlined text-base text-primary">school</span>
-              {collegeName}
-            </span>
+  {student?.email_address && (
+    <span className="flex items-center gap-1">
+      <span className="material-symbols-outlined text-base text-primary">mail</span>
+      {student.email_address}
+    </span>
+  )}
+  {student?.contact_number && (
+    <span className="flex items-center gap-1">
+      <span className="material-symbols-outlined text-base text-primary">call</span>
+      {student.contact_number}
+    </span>
+  )}
 </div>
 {/* Quick Links & Contact Bar */}
 <div className="flex flex-wrap items-center gap-space-sm pt-space-sm">
-<a className="inline-flex items-center gap-1.5 px-space-sm py-1.5 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md text-label-md transition-colors" href="https://github.com" rel="noopener noreferrer" target="_blank">
+<a className="inline-flex items-center gap-1.5 px-space-sm py-1.5 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md text-label-md transition-colors" href={student?.github_link || "#"} rel="noopener noreferrer" target="_blank">
 <span className="material-symbols-outlined text-base">code</span>
-              GitHub ({student?.github_connected ? 'Connected' : 'Not Connected'})
+              GitHub ({student?.github_connected || student?.github_link ? 'Connected' : 'Not Connected'})
             </a>
-<a className="inline-flex items-center gap-1.5 px-space-sm py-1.5 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md text-label-md transition-colors" href="https://linkedin.com" rel="noopener noreferrer" target="_blank">
+<a className="inline-flex items-center gap-1.5 px-space-sm py-1.5 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md text-label-md transition-colors" href={student?.linkedin_link || "#"} rel="noopener noreferrer" target="_blank">
 <span className="material-symbols-outlined text-base">hub</span>
               LinkedIn
             </a>

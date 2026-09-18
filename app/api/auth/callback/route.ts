@@ -64,14 +64,14 @@ export async function GET(request: Request) {
         return NextResponse.redirect(`${baseUrl}/shortlist`)
       }
 
-      // Check if profile is complete (e.g. has college and domain_interests)
+      // Check if profile is complete (e.g. has domain_interests)
       const { data: student } = await supabase
         .from('students')
-        .select('college, domain_interests')
+        .select('domain_interests')
         .eq('id', session.user.id)
         .single();
         
-      if (!student || !student.college || !student.domain_interests || student.domain_interests.length === 0) {
+      if (!student || !student.domain_interests || student.domain_interests.length === 0) {
         return NextResponse.redirect(`${baseUrl}/profile/setup`)
       }
 

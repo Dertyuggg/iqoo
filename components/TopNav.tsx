@@ -85,9 +85,6 @@ export default function TopNav() {
                   <Link href="/projects/submit" className="text-sm font-medium text-on-surface-variant hover:text-on-surface hidden sm:block">Submit</Link>
                 </>
               )}
-              <button onClick={handleLogout} className="text-sm font-medium text-error hover:text-error/80 px-4 py-2 rounded-lg bg-error/10 hover:bg-error/20 transition-colors">
-                Log out
-              </button>
             </>
           ) : (
             <Link href="/login" className="px-5 py-2 rounded-full bg-on-surface text-surface text-[14px] font-semibold hover:bg-on-surface/90 transition-colors">

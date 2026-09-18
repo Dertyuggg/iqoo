@@ -1,10 +1,11 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect } from 'react';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, LogOut } from 'lucide-react';
+import { createClient } from '@/lib/supabase/client';
 
 const sidebarLinks = [
   {
@@ -20,12 +21,19 @@ const sidebarLinks = [
   { name: 'Assessments', icon: '✎', href: '/assessment' },
   { name: 'Projects', icon: '■', href: '/projects/submit' },
   { name: 'Roadmap', icon: '◖', href: '/roadmap', badge: 'New' },
-  { name: 'Settings', icon: '✱', href: '/profile/edit' },
+  { name: 'Profile', icon: '✱', href: '/profile/edit' },
 ];
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const router = useRouter();
+  const supabase = createClient();
   const [expandedItems, setExpandedItems] = useState<Record<string, boolean>>({});
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    router.push('/');
+  };
 
   // Auto-expand parent if we are on a child route
   useEffect(() => {
@@ -160,10 +168,19 @@ export default function Sidebar() {
       </nav>
 
       {/* Verification CTA */}
-      <div className="mt-auto p-3 rounded-xl bg-surface-container border border-outline/30">
+      <div className="mt-auto p-3 rounded-xl bg-surface-container border border-outline/30 mb-2">
         <p className="text-on-surface text-[13px] font-semibold mb-1">Profile is 68% verified.</p>
         <p className="text-on-surface-muted text-[12px] leading-snug">Finish the defence round to unlock the shareable link.</p>
       </div>
+
+      {/* Log out button */}
+      <button 
+        onClick={handleLogout}
+        className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-[14px] font-medium text-error hover:text-error hover:bg-error/10 transition-colors w-full text-left"
+      >
+        <LogOut className="w-4 h-4 ml-0.5" />
+        <span className="flex-1">Log out</span>
+      </button>
     </aside>
   );
 }
