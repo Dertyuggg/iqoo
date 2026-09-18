@@ -3,7 +3,7 @@ import Link from 'next/link';
 export default function LoginSelectionPage() {
   return (
     <main className="min-h-screen flex flex-col items-center justify-center bg-surface p-space-md">
-      <div className="w-full max-w-[480px] bg-surface-container-lowest p-space-2xl rounded-2xl shadow-sm border border-outline-variant/30 text-center space-y-space-xl">
+      <div className="w-full max-w-[640px] bg-surface-container-lowest p-space-xl sm:p-space-2xl rounded-2xl shadow-sm border border-outline-variant/30 text-center space-y-space-xl">
         <div className="flex flex-col items-center gap-space-sm">
           <img 
             alt="Verified Talent Logo" 
@@ -14,7 +14,7 @@ export default function LoginSelectionPage() {
           <p className="font-body-md text-body-md text-on-surface-variant">Select your account type to continue.</p>
         </div>
 
-        <div className="grid grid-cols-1 gap-space-md">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-space-md">
           <Link 
             href="/student-login"
             className="flex flex-col items-center p-space-md rounded-xl bg-surface-container-low hover:bg-surface-container border border-outline-variant transition-colors group"

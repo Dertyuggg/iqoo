@@ -5,6 +5,7 @@ import { useRef, Suspense } from 'react';
 import dynamic from 'next/dynamic';
 import HeroEntrance, { HeroStats } from '@/components/HeroEntrance';
 import CountUpStat from '@/components/CountUpStat';
+import FadeIn from '@/components/FadeIn';
 
 const LiveVerificationChain = dynamic(() => import('@/components/LiveVerificationChain'), {
   ssr: false,
@@ -87,7 +88,7 @@ export default function LandingPage() {
             href="/login"
             className="px-5 py-2 rounded-full bg-on-surface text-surface text-[14px] font-semibold hover:bg-on-surface/90 transition-colors"
           >
-            Start your profile
+            Login
           </Link>
         </div>
       </header>
@@ -153,7 +154,7 @@ export default function LandingPage() {
             ║     FIVE THINGS SECTION       ║
             ╚═════════════════════════════════╝ */}
         <section id="how-it-works" className="w-full bg-surface py-space-4xl" style={{ contentVisibility: 'auto', containIntrinsicSize: '0 800px', contain: 'layout style paint' }}>
-          <div className="max-w-[1280px] mx-auto px-gutter-mobile lg:px-gutter-desktop">
+          <FadeIn className="max-w-[1280px] mx-auto px-gutter-mobile lg:px-gutter-desktop">
 
             {/* Section header */}
             <div className="max-w-2xl mb-space-3xl">
@@ -169,19 +170,19 @@ export default function LandingPage() {
             <Suspense fallback={<div className="h-[400px]" />}>
   <PipelineRail />
 </Suspense>
-          </div>
+          </FadeIn>
         </section>
 
 {/* ╔════════════════════════════════╗
             ║    FOR STUDENTS / COMPANIES   ║
             ╚═════════════════════════════════╝ */}
         <section id="for-students" className="w-full bg-surface-dim py-space-4xl" style={{ contentVisibility: 'auto', containIntrinsicSize: '0 700px', contain: 'layout style paint' }}>
-          <div className="max-w-[1280px] mx-auto px-gutter-mobile lg:px-gutter-desktop">
+          <FadeIn className="max-w-[1280px] mx-auto px-gutter-mobile lg:px-gutter-desktop">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
               {/* Students card */}
               <Suspense fallback={<div className="bg-surface-container border border-outline/40 rounded-2xl p-8 h-[300px]" />}>
-                <CursorGlowPanel hue="#a78bfa" className="bg-surface-container border border-outline/40 rounded-2xl p-8 flex flex-col gap-5 card-glow">
+                <CursorGlowPanel hue="#a78bfa" className="bg-surface-container border border-outline/40 rounded-2xl p-8 flex flex-col gap-5 card-glow transition-transform hover:-translate-y-1 hover:shadow-lg">
                   <span className="inline-flex items-center gap-1.5 w-fit px-3 py-1 rounded-full bg-primary/15 text-primary text-[13px] font-semibold">
                     <span className="w-2 h-2 rounded-full bg-primary" />
                     For students
@@ -208,7 +209,7 @@ export default function LandingPage() {
 
               {/* Companies card */}
               <Suspense fallback={<div className="bg-surface-container border border-outline/40 rounded-2xl p-8 h-[300px]" />}>
-                <CursorGlowPanel id="for-companies" hue="#34d399" className="bg-surface-container border border-outline/40 rounded-2xl p-8 flex flex-col gap-5 card-glow">
+                <CursorGlowPanel id="for-companies" hue="#34d399" className="bg-surface-container border border-outline/40 rounded-2xl p-8 flex flex-col gap-5 card-glow transition-transform hover:-translate-y-1 hover:shadow-lg">
                 <span className="inline-flex items-center gap-1.5 w-fit px-3 py-1 rounded-full bg-success/15 text-success text-[13px] font-semibold">
                   <span className="w-2 h-2 rounded-full bg-success" />
                   For companies
@@ -233,17 +234,17 @@ export default function LandingPage() {
               </CursorGlowPanel>
             </Suspense>
             </div>
-          </div>
+          </FadeIn>
         </section>
 
 {/* ╔════════════════════════════════╗
             ║       BIG STATS SECTION       ║
             ╚═════════════════════════════════╝ */}
         <section ref={statsRef} className="w-full bg-surface py-space-4xl" style={{ contentVisibility: 'auto', containIntrinsicSize: '0 400px', contain: 'layout style paint' }}>
-          <div className="max-w-[1280px] mx-auto px-gutter-mobile lg:px-gutter-desktop">
+          <FadeIn className="max-w-[1280px] mx-auto px-gutter-mobile lg:px-gutter-desktop">
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
-              {stats.map((s) => (
-                <div key={s.label} className="bg-surface-container border border-outline/40 rounded-2xl p-6 text-center card-glow">
+              {stats.map((s, index) => (
+                <div key={s.label} className="bg-surface-container border border-outline/40 rounded-2xl p-6 text-center card-glow hover:-translate-y-1 transition-transform hover:shadow-lg" style={{ transitionDelay: `${index * 50}ms` }}>
                   <p className={`text-[clamp(2rem,4vw,3rem)] font-extrabold leading-none mb-2 ${s.color}`}>
                     <CountUpStat value={s.value} suffix={s.suffix} rootRef={statsRef} />
                   </p>
@@ -251,14 +252,14 @@ export default function LandingPage() {
                 </div>
               ))}
             </div>
-          </div>
+          </FadeIn>
         </section>
 
 {/* ╔════════════════════════════════╗
             ║         FINAL CTA             ║
             ╚═════════════════════════════════╝ */}
         <section className="w-full bg-surface py-space-4xl" style={{ contentVisibility: 'auto', containIntrinsicSize: '0 500px', contain: 'layout style paint' }}>
-          <div className="max-w-[900px] mx-auto px-gutter-mobile lg:px-gutter-desktop">
+          <FadeIn className="max-w-[900px] mx-auto px-gutter-mobile lg:px-gutter-desktop">
             <div className="cta-glass rounded-3xl p-10 md:p-16 text-center flex flex-col items-center gap-6">
               <h2 className="font-display text-[clamp(1.6rem,4vw,2.5rem)] font-extrabold leading-tight text-gradient-cta">
                 Start the streak today.<br />Be verified by next month.
@@ -268,12 +269,12 @@ export default function LandingPage() {
               </p>
               <Link
                 href="/login"
-                className="mt-2 px-8 py-3.5 rounded-full bg-on-surface text-surface text-[15px] font-semibold hover:bg-on-surface/90 transition-all hover:shadow-xl hover:shadow-primary/20"
+                className="mt-2 px-8 py-3.5 rounded-full bg-on-surface text-surface text-[15px] font-semibold hover:bg-on-surface/90 transition-all hover:scale-105 active:scale-95 hover:shadow-xl hover:shadow-primary/20"
               >
                 Create my profile
               </Link>
             </div>
-          </div>
+          </FadeIn>
         </section>
       </main>
 

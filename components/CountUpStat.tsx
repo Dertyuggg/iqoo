@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { registerCountUp, unregisterCountUp, useCountUpObserver } from '@/lib/count-up-observer';
+import { useInView, animate } from 'framer-motion';
 
 type CountUpStatProps = {
   value: number;
@@ -9,30 +9,30 @@ type CountUpStatProps = {
   rootRef?: React.RefObject<Element | null>;
 };
 
-const DURATION_MS = 1400;
-
 export default function CountUpStat({ value, suffix = '', rootRef }: CountUpStatProps) {
-  const elementRef = useRef<HTMLSpanElement>(null);
-  const registrationIdRef = useRef<number | null>(null);
+  const ref = useRef<HTMLSpanElement>(null);
+  
+  // If a rootRef is provided, we use it to determine visibility. 
+  // Otherwise, we use the span's own ref.
+  const isInView = useInView(rootRef?.current ? rootRef : ref, { once: true, amount: 0.25 });
+  
   const [displayValue, setDisplayValue] = useState(0);
 
-  useCountUpObserver(rootRef ?? { current: null });
-
   useEffect(() => {
-    const element = elementRef.current;
-    if (!element) return;
-
-    registrationIdRef.current = registerCountUp(value, suffix, element, setDisplayValue);
-
-    return () => {
-      if (registrationIdRef.current !== null) {
-        unregisterCountUp(registrationIdRef.current);
-      }
-    };
-  }, [value, suffix]);
+    if (isInView) {
+      const controls = animate(0, value, {
+        duration: 1.4,
+        ease: "easeOut",
+        onUpdate: (v) => {
+          setDisplayValue(Math.round(v));
+        }
+      });
+      return () => controls.stop();
+    }
+  }, [isInView, value]);
 
   return (
-    <span ref={elementRef} aria-label={`${value.toLocaleString('en-IN')}${suffix}`}>
+    <span ref={ref} aria-label={`${value.toLocaleString('en-IN')}${suffix}`}>
       {displayValue.toLocaleString('en-IN')}{suffix}
     </span>
   );

@@ -15,17 +15,29 @@ const navLinks = [
 export default function BottomNav() {
   const pathname = usePathname();
   const [user, setUser] = useState<any>(null);
+  const [isCompany, setIsCompany] = useState(false);
   const supabase = createClient();
 
   useEffect(() => {
     const getUser = async () => {
       const { data: { user } } = await supabase.auth.getUser();
-      setUser(user);
+      if (user) {
+        setUser(user);
+        const { data: company } = await supabase
+          .from('companies')
+          .select('id')
+          .eq('id', user.id)
+          .single();
+        setIsCompany(!!company);
+      }
     };
     getUser();
 
     const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
+      if (!session?.user) {
+        setIsCompany(false);
+      }
     });
 
     return () => {
@@ -33,8 +45,14 @@ export default function BottomNav() {
     };
   }, []);
 
+  // Hide BottomNav on auth pages, landing page, and for companies
+  const isAuthOrLandingPage = pathname === '/' || pathname === '/landing' || pathname.startsWith('/login') || pathname.startsWith('/student-login') || pathname.startsWith('/company-login') || pathname.startsWith('/student-signup') || pathname.startsWith('/company-signup');
+  if (isAuthOrLandingPage || isCompany) {
+    return null;
+  }
+
   return (
-    <nav className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50">
+    <nav className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 md:hidden">
       <div className="flex items-center gap-1 px-1.5 py-1.5 rounded-full bg-surface-container-high/90 backdrop-blur-xl border border-outline-variant/40 shadow-2xl shadow-black/40">
         {navLinks.map((link) => {
           const isActive = pathname === link.path;

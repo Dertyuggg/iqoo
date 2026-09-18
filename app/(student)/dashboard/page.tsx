@@ -1,8 +1,4 @@
 import Link from 'next/link';
-import Sidebar from '@/components/Sidebar';
-import DashboardScoreRing from '@/components/DashboardScoreRing';
-import DashboardSkillBars from '@/components/DashboardSkillBars';
-import DashboardStreakHeatmap from '@/components/DashboardStreakHeatmap';
 import { Flame } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 
@@ -15,14 +11,6 @@ const stages = [
   { title: 'Defend it live', sub: 'Thursday 6:40 pm', status: 'not started', color: '#f87171' },
 ];
 
-/* ── Score breakdown ── */
-const scores = [
-  { label: 'Consistency', value: 94, color: '#f472b6' },
-  { label: 'Fundamentals', value: 81, color: '#fbbf24' },
-  { label: 'Shipped work', value: 72, color: '#34d399' },
-  { label: 'Code review', value: 66, color: '#60a5fa' },
-  { label: 'Defence', value: null, color: '#6b6784' },
-];
 
 /* ── Activity feed ── */
 const activity = [
@@ -44,21 +32,26 @@ export default async function StudentDashboardPage() {
   const hour = new Date().getHours();
   const greeting = hour < 12 ? 'Morning' : hour < 17 ? 'Afternoon' : 'Evening';
 
+  // For demonstration, if no student record exists or if specifically marked, show empty state
+  const isNewStudent = false; // Could be derived from student data (e.g. !student || student.streak === 0)
+
   return (
     <>
-      <main className="w-full bg-surface min-h-screen pb-24">
-        <div className="flex">
-
-          <Sidebar activePath="/dashboard" />
-
-          {/* ╔════════════════════════════════╗
-              ║        MAIN CONTENT           ║
-              ╚════════════════════════════════╝ */}
-          <div className="flex-1 min-w-0">
-            <div className="max-w-[1080px] mx-auto px-4 lg:px-8 py-6 space-y-6">
-
-              {/* ── Header: Greeting + Streak ── */}
-              <div className="flex items-start justify-between">
+      {isNewStudent ? (
+                <div className="flex flex-col items-center justify-center text-center py-20 px-4 bg-surface-container border border-outline/30 rounded-2xl mt-10">
+                  <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+                    <Flame className="w-8 h-8 text-primary opacity-50" />
+                  </div>
+                  <h2 className="font-display text-2xl font-bold text-on-surface mb-2">Welcome to Praman, {firstName}!</h2>
+                  <p className="text-on-surface-variant max-w-md mb-6">You're right at the start. Build your proof of work by consistently submitting projects and passing assessments.</p>
+                  <Link href="/projects/submit" className="px-6 py-2.5 rounded-full bg-primary text-on-primary font-semibold hover:bg-primary-container transition-colors">
+                    Start Your First Project
+                  </Link>
+                </div>
+              ) : (
+                <>
+                  {/* ── Header: Greeting + Streak ── */}
+                  <div className="flex items-start justify-between">
                 <div>
                   <h1 className="font-display text-[clamp(1.5rem,3vw,2rem)] font-extrabold text-on-surface">
                     {greeting}, {firstName}.
@@ -71,67 +64,6 @@ export default async function StudentDashboardPage() {
                   <Flame className="w-6 h-6 text-[#FF6B35] fill-[#FF6B35] streak-flame" />
                   <span className="text-on-surface text-[24px] font-extrabold leading-none mt-1">41</span>
                   <span className="text-on-surface-muted text-[11px]">day streak</span>
-                </div>
-              </div>
-
-              {/* ── Top row: Score + Defence + Rank ── */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-
-                {/* Verification Score Card */}
-                <div className="bg-surface-container border border-outline/30 rounded-2xl p-5 card-glow">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-on-surface text-[15px] font-semibold">Verification score</h3>
-                    <span className="text-on-surface-muted text-[12px]">updated 2h ago</span>
-                  </div>
-                  <div className="flex gap-6">
-                    {/* Circular score */}
-                    <DashboardScoreRing score={68} />
-                    {/* Score breakdown */}
-                    <DashboardSkillBars scores={scores} />
-                  </div>
-                </div>
-
-                {/* Defence Round Card */}
-                <div className="bg-surface-container border border-outline/30 rounded-2xl p-5 card-glow">
-                  <div className="flex items-center justify-between mb-3">
-                    <h3 className="text-on-surface text-[15px] font-semibold">Defence round</h3>
-                    <span className="px-2 py-0.5 rounded-full bg-success/20 text-success text-[11px] font-semibold">booked</span>
-                  </div>
-                  <p className="text-on-surface text-[18px] font-bold mb-1">Thursday, 6:40 pm</p>
-                  <p className="text-on-surface-variant text-[13px] leading-relaxed mb-4">
-                    Nine minutes on <span className="font-mono text-on-surface">kisan-mandi-price</span>.
-                    Questions come from your own diff — no prep material.
-                  </p>
-                  {/* Countdown */}
-                  <div className="grid grid-cols-4 gap-2 mb-4">
-                    {[
-                      { val: '02', label: 'days' },
-                      { val: '14', label: 'hrs' },
-                      { val: '08', label: 'min' },
-                      { val: '49', label: 'sec' },
-                    ].map((t) => (
-                      <div key={t.label} className="bg-surface-container-high rounded-xl p-2 text-center">
-                        <p className="text-on-surface text-[20px] font-extrabold leading-none">{t.val}</p>
-                        <p className="text-on-surface-muted text-[11px] mt-1">{t.label}</p>
-                      </div>
-                    ))}
-                  </div>
-                  <button className="w-full py-2.5 rounded-xl bg-on-surface text-surface text-[14px] font-semibold hover:bg-on-surface/90 transition-colors">
-                    Run a mock round
-                  </button>
-                </div>
-
-                {/* Rank Card */}
-                <div className="bg-surface-container border border-outline/30 rounded-2xl p-5 card-glow flex flex-col items-center justify-center text-center">
-                  <div className="flex items-center gap-2 mb-2 self-stretch justify-between">
-                    <h3 className="text-on-surface text-[15px] font-semibold">Your rank</h3>
-                    <span className="text-on-surface-muted text-[12px]">Backend · India</span>
-                  </div>
-                  <p className="text-gradient-hero text-[56px] font-extrabold leading-none my-3">#214</p>
-                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-success/15 text-success text-[13px] font-semibold mb-2">
-                    ↑ 47 this week
-                  </span>
-                  <p className="text-on-surface-muted text-[13px]">of 12,400 verified students</p>
                 </div>
               </div>
 
@@ -174,35 +106,10 @@ export default async function StudentDashboardPage() {
                 </div>
               </div>
 
-              {/* ── Bottom row: Practice history + Activity feed ── */}
-              <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
-
-                {/* Practice History Heatmap */}
-                <div className="lg:col-span-3 bg-surface-container border border-outline/30 rounded-2xl p-5 card-glow">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-on-surface text-[15px] font-semibold">Practice history</h3>
-                    <span className="text-on-surface-muted text-[12px]">last 22 weeks</span>
-                  </div>
-                  {/* Heatmap grid */}
-                  <div className="overflow-x-auto pb-2">
-                    <DashboardStreakHeatmap />
-                  </div>
-                  {/* Legend */}
-                  <div className="flex items-center gap-2 mt-3">
-                    <span className="text-on-surface-muted text-[11px]">lighter</span>
-                    <div className="flex gap-1">
-                      <span className="w-3 h-3 rounded-sm bg-outline/20" />
-                      <span className="w-3 h-3 rounded-sm bg-[#FF6B3533]" />
-                      <span className="w-3 h-3 rounded-sm bg-[#FF6B3566]" />
-                      <span className="w-3 h-3 rounded-sm bg-[#FF6B3599]" />
-                      <span className="w-3 h-3 rounded-sm bg-[#FF6B35]" />
-                    </div>
-                    <span className="text-on-surface-muted text-[11px]">heavier</span>
-                  </div>
-                </div>
-
+              {/* ── Bottom row: Activity feed ── */}
+              <div className="grid grid-cols-1 gap-4">
                 {/* What Changed (Activity Feed) */}
-                <div className="lg:col-span-2 bg-surface-container border border-outline/30 rounded-2xl p-5 card-glow">
+                <div className="bg-surface-container border border-outline/30 rounded-2xl p-5 card-glow">
                   <div className="flex items-center justify-between mb-4">
                     <h3 className="text-on-surface text-[15px] font-semibold">What changed</h3>
                     <span className="text-success text-[12px] font-semibold">live</span>
@@ -222,10 +129,8 @@ export default async function StudentDashboardPage() {
                 </div>
               </div>
 
-            </div>
-          </div>
-        </div>
-      </main>
+                </>
+              )}
     </>
   );
 }
