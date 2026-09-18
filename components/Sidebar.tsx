@@ -52,18 +52,7 @@ export default function Sidebar() {
     setExpandedItems(prev => ({ ...prev, [name]: !prev[name] }));
   };
   return (
-    <aside className="hidden lg:flex flex-col w-[200px] shrink-0 sticky top-0 h-screen border-r border-outline/30 bg-surface-dim p-5">
-      {/* Logo */}
-      <Link href="/" className="flex items-center gap-2 mb-8">
-        <div className="grid grid-cols-2 gap-0.5">
-          <span className="w-2.5 h-2.5 rounded-sm bg-primary" />
-          <span className="w-2.5 h-2.5 rounded-sm bg-secondary" />
-          <span className="w-2.5 h-2.5 rounded-sm bg-tertiary" />
-          <span className="w-2.5 h-2.5 rounded-sm bg-step-4" />
-        </div>
-        <span className="text-on-surface text-[17px] font-extrabold tracking-tight">Praman</span>
-      </Link>
-
+    <aside className="hidden lg:flex flex-col w-[200px] shrink-0 sticky top-0 h-screen border-r border-outline/30 bg-surface-dim p-5 pt-8">
       {/* Nav links */}
       <nav className="flex flex-col gap-1 flex-1 relative">
         {sidebarLinks.map((link) => {

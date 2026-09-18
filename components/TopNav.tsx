@@ -66,7 +66,7 @@ export default function TopNav() {
             </div>
           </div>
           <span className="font-display text-[18px] text-on-surface font-extrabold tracking-tight">
-            Praman
+            TalentIQ
           </span>
         </Link>
 

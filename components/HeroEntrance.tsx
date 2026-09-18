@@ -22,7 +22,7 @@ export default function HeroEntrance({ heroRef }: { heroRef: React.RefObject<HTM
       <h1 className="font-display text-[clamp(2.2rem,5vw,3.5rem)] font-extrabold leading-[1.1] tracking-tight">
         <span className="hero-line"><span className={`hero-line-inner ${hasMounted ? 'is-visible' : ''}`} style={{ '--hero-delay': '0ms' } as CSSProperties}>Your repo says</span></span>
         <span className="hero-line"><span className={`hero-line-inner ${hasMounted ? 'is-visible' : ''}`} style={{ '--hero-delay': '100ms' } as CSSProperties}>you built it.</span></span>
-        <span className="hero-line"><span className={`hero-line-inner text-gradient-hero hero-gradient-animated ${hasMounted ? 'is-visible' : ''}`} style={{ '--hero-delay': '200ms' } as CSSProperties}>Praman proves it.</span></span>
+        <span className="hero-line"><span className={`hero-line-inner text-gradient-hero hero-gradient-animated ${hasMounted ? 'is-visible' : ''}`} style={{ '--hero-delay': '200ms' } as CSSProperties}>TalentIQ proves it.</span></span>
       </h1>
 
       <p className={`hero-entrance-item text-on-surface-variant text-[16px] leading-relaxed max-w-lg ${hasMounted ? 'is-visible' : ''}`} style={{ '--hero-delay': '420ms' } as CSSProperties}>

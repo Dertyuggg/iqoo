@@ -42,7 +42,7 @@ export default async function StudentDashboardPage() {
                   <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
                     <Flame className="w-8 h-8 text-primary opacity-50" />
                   </div>
-                  <h2 className="font-display text-2xl font-bold text-on-surface mb-2">Welcome to Praman, {firstName}!</h2>
+                  <h2 className="font-display text-2xl font-bold text-on-surface mb-2">Welcome to TalentIQ, {firstName}!</h2>
                   <p className="text-on-surface-variant max-w-md mb-6">You're right at the start. Build your proof of work by consistently submitting projects and passing assessments.</p>
                   <Link href="/projects/submit" className="px-6 py-2.5 rounded-full bg-primary text-on-primary font-semibold hover:bg-primary-container transition-colors">
                     Start Your First Project

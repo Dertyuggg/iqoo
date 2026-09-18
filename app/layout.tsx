@@ -4,7 +4,7 @@ import TopNav from "@/components/TopNav";
 import BottomNav from "@/components/BottomNav";
 
 export const metadata: Metadata = {
-  title: "Praman — Verified Talent",
+  title: "TalentIQ — Verified Talent",
   description: "A skill profile recruiters can trust. Built from daily practice, paste-proof assessments, real commit history, and a live defence round. Made for tier-2/3 college students.",
 };
 
