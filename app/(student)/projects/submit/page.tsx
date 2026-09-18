@@ -10,6 +10,7 @@ const STEPS = [
   { id: 2, label: 'Repo' },
   { id: 3, label: 'Stack' },
   { id: 4, label: 'Demo' },
+  { id: 5, label: 'AI Verification' },
 ] as const;
 
 // ── Commit Authenticity Scan ──
@@ -104,10 +105,8 @@ function StepCircle({
           ? {
               scale: [1, 1.15, 1],
               transition: {
-                type: 'spring',
-                stiffness: 400,
-                damping: 15,
-                mass: 0.8,
+                duration: 0.4,
+                ease: "easeInOut",
               },
             }
           : { scale: 1 }
@@ -186,31 +185,43 @@ function StepConnector({
 // ── Step Indicator Bar ──
 function StepIndicator({ currentStep }: { currentStep: number }) {
   return (
-    <div className="flex items-center gap-4 mb-8">
-      {STEPS.map((step, i) => (
-        <div
-          key={step.id}
-          className={`flex items-center gap-3 ${
-            i < STEPS.length - 1 ? 'flex-1' : ''
-          } ${
-            step.id > currentStep ? 'opacity-50' : ''
-          }`}
-        >
-          <StepCircle step={step} currentStep={currentStep} />
-          <span
-            className={`text-[14px] font-semibold whitespace-nowrap ${
-              step.id <= currentStep
-                ? 'text-on-surface'
-                : 'text-on-surface-variant'
+    <div 
+      className="flex items-center gap-2 md:gap-3 mb-8 overflow-x-auto pb-1"
+      style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+    >
+      <style>{`
+        .step-scroll-container::-webkit-scrollbar {
+          display: none;
+        }
+      `}</style>
+      <div className="flex items-center min-w-max w-full step-scroll-container">
+        {STEPS.map((step, i) => (
+          <div
+            key={step.id}
+            className={`flex items-center gap-2 ${
+              i < STEPS.length - 1 ? 'flex-1 mr-2 md:mr-3' : ''
+            } ${
+              step.id > currentStep ? 'opacity-50' : ''
             }`}
           >
-            {step.label}
-          </span>
-          {i < STEPS.length - 1 && (
-            <StepConnector fromStep={step.id} currentStep={currentStep} />
-          )}
-        </div>
-      ))}
+            <StepCircle step={step} currentStep={currentStep} />
+            <span
+              className={`text-[13px] md:text-[14px] font-semibold whitespace-nowrap ${
+                step.id <= currentStep
+                  ? 'text-on-surface'
+                  : 'text-on-surface-variant'
+              }`}
+            >
+              {step.label}
+            </span>
+            {i < STEPS.length - 1 && (
+              <div className="ml-2 md:ml-3 flex-1 flex">
+                <StepConnector fromStep={step.id} currentStep={currentStep} />
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
@@ -385,7 +396,7 @@ function CommitScanPanel({
                   transition={
                     isRevealed
                       ? {
-                          scale: { type: 'spring', stiffness: 450, damping: 14 },
+                          scale: { duration: 0.3, ease: 'easeInOut' },
                           backgroundColor: { duration: 0.2 },
                         }
                       : { duration: 0.2 }
@@ -612,6 +623,199 @@ function PaneDemo() {
   );
 }
 
+// ── Pane AI Verification ──
+type Step5Result = {
+  trust_score: number;
+  verification_status: string;
+  score_method?: string;
+  github: {
+    coding_consistency: number;
+    github_authenticity: number;
+    projects_completed: number;
+    commits: number;
+    active_days: number;
+  };
+  project: {
+    code_quality: number;
+    project_depth: number;
+    project_structure: number;
+    documentation: number;
+    technical_complexity: number;
+    originality_signal: number;
+  };
+  ml_features: {
+    assessment_score: null;
+    defense_score: null;
+  };
+  evidence_status: {
+    github: boolean;
+    project_analysis: boolean;
+    assessment: boolean;
+    defense: boolean;
+  };
+};
+
+function PaneAIVerification({ repoUrl }: { repoUrl: string }) {
+  const [githubUrl, setGithubUrl] = useState(repoUrl);
+  const [projectPath, setProjectPath] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [statusText, setStatusText] = useState('');
+  const [result, setResult] = useState<Step5Result | null>(null);
+
+  const handleAnalyze = async () => {
+    if (!githubUrl || !projectPath) {
+      setError('Please provide both GitHub URL and Project Path');
+      return;
+    }
+
+    setLoading(true);
+    setError('');
+    setResult(null);
+
+    try {
+      setStatusText('Analyzing GitHub repository...');
+      setTimeout(() => setStatusText('Analyzing project files...'), 1500);
+      setTimeout(() => setStatusText('Running Gemini project review...'), 3500);
+      setTimeout(() => setStatusText('Calculating AI evidence score...'), 7000);
+
+      const response = await fetch('/api/step5-analysis', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ githubUrl, projectPath }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'AI analysis temporarily unavailable');
+      }
+
+      setResult(data);
+    } catch (err: any) {
+      setError(err.message || 'AI analysis temporarily unavailable');
+    } finally {
+      setLoading(false);
+      setStatusText('');
+    }
+  };
+
+  return (
+    <div className="space-y-8">
+      <div>
+        <h2 className="text-on-surface text-[18px] font-bold mb-2">AI Verification</h2>
+        <p className="text-on-surface-muted text-[14px]">
+          AI analyzes your project and GitHub evidence to generate a trust score.
+        </p>
+      </div>
+
+      {!result && (
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col gap-5">
+          <div className="space-y-2">
+            <label className="text-on-surface text-[14px] font-bold">GitHub Repository URL</label>
+            <input 
+              type="text" 
+              value={githubUrl}
+              onChange={(e) => setGithubUrl(e.target.value)}
+              placeholder="https://github.com/your-username/repo-name"
+              className="w-full bg-[#111122] border border-outline/30 text-on-surface text-[15px] p-4 rounded-xl focus:outline-none focus:border-step-4 transition-colors"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-on-surface text-[14px] font-bold">Project Folder Path</label>
+            <input 
+              type="text" 
+              value={projectPath}
+              onChange={(e) => setProjectPath(e.target.value)}
+              placeholder="/absolute/path/to/project"
+              className="w-full bg-[#111122] border border-outline/30 text-on-surface text-[15px] p-4 rounded-xl focus:outline-none focus:border-step-4 transition-colors"
+            />
+          </div>
+
+          {error && (
+            <div className="p-4 bg-error/10 border border-error/50 text-error rounded-lg text-[14px] font-semibold">
+              <p>{error}</p>
+            </div>
+          )}
+
+          <button 
+            type="button"
+            onClick={handleAnalyze} 
+            disabled={loading}
+            className={`mt-2 w-full py-4 rounded-xl text-[15px] font-bold flex items-center justify-center transition-all ${
+              loading ? 'bg-surface-container-highest text-on-surface-muted' : 'bg-step-4 text-white hover:bg-step-4/90 cursor-pointer'
+            }`}
+          >
+            {loading ? (
+              <span className="flex items-center gap-2">
+                <span className="material-symbols-outlined text-[18px]">hourglass_empty</span>
+                {statusText}
+              </span>
+            ) : (
+              "Analyze Project"
+            )}
+          </button>
+        </motion.div>
+      )}
+
+      {result && (
+        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="flex flex-col gap-6">
+          <div className="bg-step-4/10 border border-step-4/30 p-6 rounded-2xl flex flex-col items-center justify-center text-center">
+             <h2 className="text-[12px] text-step-4 uppercase tracking-wider font-bold mb-2">AI EVIDENCE TRUST SCORE</h2>
+             <div className="text-5xl font-black text-on-surface mb-2">
+               {result.trust_score} <span className="text-xl text-on-surface-muted font-medium">/ 100</span>
+             </div>
+             
+             <div className={`mt-2 px-4 py-1 rounded-full font-bold text-[12px] ${result.verification_status.includes('NOT VERIFIED') ? 'bg-warning/20 text-warning border border-warning/50' : 'bg-success/20 text-success border border-success/50'}`}>
+               {result.verification_status}
+             </div>
+
+             <p className="mt-4 text-[12px] text-on-surface-muted max-w-sm">
+               Score is generated from available GitHub and project evidence. Assessment and defense evidence are not yet included.
+             </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="bg-surface-container-high p-4 rounded-xl border border-outline/20">
+              <h3 className="text-[13px] font-bold mb-3 border-b border-outline/10 pb-2 text-step-4">GitHub Evidence</h3>
+              <div className="flex flex-col gap-2 text-[13px]">
+                <div className="flex justify-between items-center"><span className="text-on-surface-muted">Coding Consistency</span><span className="font-semibold">{result.github.coding_consistency} / 100</span></div>
+                <div className="flex justify-between items-center"><span className="text-on-surface-muted">GitHub Authenticity</span><span className="font-semibold">{result.github.github_authenticity} / 100</span></div>
+                <div className="mt-2 pt-2 border-t border-outline/10 flex justify-between gap-2">
+                  <div className="text-center"><div className="font-bold">{result.github.commits}</div><div className="text-[10px] text-on-surface-muted">Commits</div></div>
+                  <div className="text-center"><div className="font-bold">{result.github.active_days}</div><div className="text-[10px] text-on-surface-muted">Days</div></div>
+                  <div className="text-center"><div className="font-bold">{result.github.projects_completed}</div><div className="text-[10px] text-on-surface-muted">Projects</div></div>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-surface-container-high p-4 rounded-xl border border-outline/20">
+              <h3 className="text-[13px] font-bold mb-3 border-b border-outline/10 pb-2 text-step-3">Project Evidence</h3>
+              <div className="flex flex-col gap-2 text-[13px]">
+                <div className="flex justify-between items-center"><span className="text-on-surface-muted">Code Quality</span><span className="font-semibold">{result.project.code_quality} / 100</span></div>
+                <div className="flex justify-between items-center"><span className="text-on-surface-muted">Project Depth</span><span className="font-semibold">{result.project.project_depth} / 100</span></div>
+                <div className="flex justify-between items-center"><span className="text-on-surface-muted">Structure</span><span className="font-semibold">{result.project.project_structure} / 100</span></div>
+                <div className="flex justify-between items-center"><span className="text-on-surface-muted">Documentation</span><span className="font-semibold">{result.project.documentation} / 100</span></div>
+                <div className="flex justify-between items-center"><span className="text-on-surface-muted">Complexity</span><span className="font-semibold">{result.project.technical_complexity} / 100</span></div>
+                <div className="flex justify-between items-center"><span className="text-on-surface-muted">Originality</span><span className="font-semibold">{result.project.originality_signal} / 100</span></div>
+              </div>
+            </div>
+          </div>
+          
+          <button 
+            type="button"
+            onClick={() => setResult(null)} 
+            className="mt-2 self-center px-4 py-2 text-step-4 text-[13px] font-semibold hover:bg-surface-container-highest rounded-lg transition-colors"
+          >
+            Re-analyze Project
+          </button>
+        </motion.div>
+      )}
+    </div>
+  );
+}
+
 // ── Main Page ──
 export default function SubmitProjectPage() {
   const [currentStep, setCurrentStep] = useState(1);
@@ -739,7 +943,7 @@ export default function SubmitProjectPage() {
       <main className="w-full bg-surface min-h-screen pb-24">
         <div className="flex">
           {/* Left Sidebar */}
-          <Sidebar activePath="/projects/submit" />
+          <Sidebar />
 
           {/* Main Content */}
           <div className="flex-1 min-w-0">
@@ -792,6 +996,7 @@ export default function SubmitProjectPage() {
                         />
                       )}
                       {currentStep === 4 && <PaneDemo />}
+                      {currentStep === 5 && <PaneAIVerification repoUrl={repoUrl} />}
                     </div>
 
                     {/* Navigation footer */}

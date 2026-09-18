@@ -4,7 +4,7 @@ export default function DashboardLoading() {
   return (
     <main className="w-full bg-surface min-h-screen pb-24">
       <div className="flex">
-        <Sidebar activePath="/dashboard" />
+        <Sidebar />
         <div className="flex-1 min-w-0">
           <div className="max-w-[1080px] mx-auto px-4 lg:px-8 py-6 space-y-6">
             

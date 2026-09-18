@@ -1,0 +1,30 @@
+{
+  "trust_score": 32,
+  "verification_status": "PARTIAL EVIDENCE (GITHUB + PROJECT) - NOT VERIFIED",
+  "score_method": "AI Evidence Trust Score",
+  "github": {
+    "coding_consistency": 27,
+    "github_authenticity": 50,
+    "projects_completed": 1,
+    "commits": 1,
+    "active_days": 1
+  },
+  "project": {
+    "code_quality": 40,
+    "project_depth": 40,
+    "project_structure": 36,
+    "documentation": 26,
+    "technical_complexity": 28,
+    "originality_signal": 27
+  },
+  "ml_features": {
+    "assessment_score": null,
+    "defense_score": null
+  },
+  "evidence_status": {
+    "github": true,
+    "project_analysis": true,
+    "assessment": false,
+    "defense": false
+  }
+}
