@@ -80,7 +80,7 @@ export default function BottomNav() {
         {/* Profile icon */}
         {user ? (
           <Link
-            href="/profile/setup"
+            href="/profile/edit"
             className="relative shrink-0 group"
             aria-label="My Profile"
           >

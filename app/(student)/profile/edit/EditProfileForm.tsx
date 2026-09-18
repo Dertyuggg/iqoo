@@ -27,7 +27,7 @@ export default function EditProfileForm({ initialData }: { initialData: ProfileD
     try {
       const result = await updateProfile(formData);
       if (result.success) {
-        router.push('/profile/setup');
+        router.push('/dashboard');
         router.refresh();
       } else {
         setError(result.error || 'Failed to update profile');

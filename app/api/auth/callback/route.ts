@@ -64,16 +64,8 @@ export async function GET(request: Request) {
         return NextResponse.redirect(`${baseUrl}/shortlist`)
       }
 
-      // Check if profile is complete (e.g. has domain_interests)
-      const { data: student } = await supabase
-        .from('students')
-        .select('domain_interests')
-        .eq('id', session.user.id)
-        .single();
-        
-      if (!student || !student.domain_interests || student.domain_interests.length === 0) {
-        return NextResponse.redirect(`${baseUrl}/profile/setup`)
-      }
+      // Let users proceed to next (dashboard) regardless of profile completeness.
+      // Profile completion is handled via the Profile tab in the dashboard.
 
       return NextResponse.redirect(`${baseUrl}${next}`)
     }

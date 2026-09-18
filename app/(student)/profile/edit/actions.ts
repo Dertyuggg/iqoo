@@ -37,7 +37,7 @@ export async function updateProfile(data: ProfileData) {
     return { success: false, error: error.message };
   }
 
-  revalidatePath('/profile/setup');
+  revalidatePath('/dashboard');
   revalidatePath('/dashboard');
   
   return { success: true };

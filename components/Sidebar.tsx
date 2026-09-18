@@ -19,7 +19,8 @@ const sidebarLinks = [
     ]
   },
   { name: 'Assessments', icon: '✎', href: '/assessment' },
-  { name: 'Projects', icon: '■', href: '/projects/submit' },
+  { name: 'Submit Project', icon: '■', href: '/projects/submit' },
+  { name: 'My Projects', icon: '▤', href: '/projects/my-projects' },
   { name: 'Roadmap', icon: '◖', href: '/roadmap', badge: 'New' },
   { name: 'Profile', icon: '✱', href: '/profile/edit' },
 ];

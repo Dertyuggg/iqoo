@@ -123,7 +123,7 @@ export default function Navbar({ activePath = '/' }: NavbarProps) {
                   {isDropdownOpen && (
                     <div className="absolute right-0 mt-2 w-48 bg-surface-container-lowest rounded-xl shadow-lg border border-surface-container-low py-2 overflow-hidden flex flex-col z-50">
                       <Link 
-                        href="/profile/setup"
+                        href="/profile/edit"
                         className="px-4 py-2 text-[14px] text-on-surface hover:bg-surface-container-low transition-colors text-left"
                         onClick={() => setIsDropdownOpen(false)}
                       >
