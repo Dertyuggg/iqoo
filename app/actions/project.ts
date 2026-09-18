@@ -68,3 +68,65 @@ export async function submitProject(formData: FormData) {
   revalidatePath('/projects/my-projects');
   redirect('/projects/my-projects');
 }
+
+export async function submitProjectAction(data: { repoUrl: string; domain: string; description: string }) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user) {
+    throw new Error('Unauthorized');
+  }
+
+  if (!data.repoUrl || !data.domain) {
+    throw new Error('Repository URL and Domain are required');
+  }
+
+  // Ensure student row exists to satisfy foreign key constraint
+  const { error: studentErr } = await supabase.from('students').upsert({ id: user.id }, { onConflict: 'id' });
+  if (studentErr) {
+    console.error('Error ensuring student exists:', studentErr);
+  }
+
+  // 1. Create project submission row
+  const { data: submission, error: submitError } = await supabase
+    .from('project_submissions')
+    .insert({
+      student_id: user.id,
+      repo_url: data.repoUrl,
+      domain: data.domain,
+      description: data.description,
+      status: 'submitted',
+    })
+    .select()
+    .single();
+
+  if (submitError) {
+    console.error('Error submitting project:', submitError);
+    throw new Error(`Failed to submit project: ${submitError.message}`);
+  }
+
+  const headersList = await headers();
+  const host = headersList.get('host');
+  const cookieHeader = headersList.get('cookie');
+  const protocol = process.env.NODE_ENV === 'development' ? 'http' : 'https';
+  const baseUrl = `${protocol}://${host}`;
+  
+  try {
+    fetch(`${baseUrl}/api/submissions/authenticity-check`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(cookieHeader ? { Cookie: cookieHeader } : {}),
+      },
+      body: JSON.stringify({
+        submissionId: submission.id,
+        repoUrl: submission.repo_url,
+      }),
+    });
+  } catch (err) {
+    console.error('Failed to trigger authenticity check:', err);
+  }
+
+  revalidatePath('/projects/my-projects');
+  return { success: true, submissionId: submission.id };
+}

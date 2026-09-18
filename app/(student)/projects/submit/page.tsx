@@ -1,6 +1,8 @@
 'use client';
 
 import Sidebar from '@/components/Sidebar';
+import { createClient } from '@/lib/supabase/client';
+import { submitProjectAction } from '@/app/actions/project';
 import { useState, useCallback, useEffect, useRef, type CSSProperties } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -835,6 +837,29 @@ export default function SubmitProjectPage() {
   const [showSuccessToast, setShowSuccessToast] = useState(false);
   const confettiCleanupTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  const [profileName, setProfileName] = useState('Ananya R');
+  const [profileInitials, setProfileInitials] = useState('AR');
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data } = await supabase.from('students').select('full_name').eq('id', user.id).single();
+        if (data && data.full_name) {
+          setProfileName(data.full_name);
+          const initials = data.full_name.split(' ').map((n: string) => n[0]).join('').substring(0, 2).toUpperCase();
+          setProfileInitials(initials);
+        } else if (user.user_metadata?.full_name) {
+          setProfileName(user.user_metadata.full_name);
+          const initials = user.user_metadata.full_name.split(' ').map((n: string) => n[0]).join('').substring(0, 2).toUpperCase();
+          setProfileInitials(initials);
+        }
+      }
+    };
+    fetchProfile();
+  }, []);
+
   const clearScanTimers = useCallback(() => {
     scanTimers.current.forEach(clearTimeout);
     scanTimers.current = [];
@@ -846,33 +871,22 @@ export default function SubmitProjectPage() {
     if (confettiCleanupTimer.current) clearTimeout(confettiCleanupTimer.current);
   }, [clearScanTimers]);
 
-  const celebrateSubmission = useCallback(() => {
+  const celebrateSubmission = useCallback(async () => {
     if (confettiCleanupTimer.current) clearTimeout(confettiCleanupTimer.current);
 
-    setShowSuccessToast(true);
-    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-    if (!reducedMotion) {
-      setConfetti(
-        Array.from({ length: CONFETTI_COUNT }, (_, id) => ({
-          id,
-          color: CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)],
-          left: 35 + Math.random() * 30,
-          dx: -45 + Math.random() * 90,
-          rotation: -540 + Math.random() * 1080,
-          delay: Math.random() * 350,
-        })),
-      );
-    } else {
-      setConfetti([]);
+    try {
+      await submitProjectAction({
+        repoUrl: repoUrl || 'https://github.com/placeholder/repo',
+        domain: selectedTech.join(', ') || 'fullstack',
+        description: description || projectName || 'No description provided',
+      });
+      window.alert('Project is submitted!');
+      window.location.reload();
+    } catch (err: any) {
+      console.error('Failed to submit project:', err);
+      window.alert(`Failed to submit project: ${err.message}`);
     }
-
-    confettiCleanupTimer.current = setTimeout(() => {
-      setConfetti([]);
-      setShowSuccessToast(false);
-      confettiCleanupTimer.current = null;
-    }, 3000);
-  }, []);
+  }, [repoUrl, selectedTech, description, projectName]);
 
   const startScan = useCallback(() => {
     if (scanPhase !== 'idle') return;
@@ -1032,10 +1046,10 @@ export default function SubmitProjectPage() {
                     {/* User Info */}
                     <div className="flex items-center gap-3 mb-6">
                       <div className="w-12 h-12 rounded-xl bg-step-4 text-white text-[16px] font-bold flex items-center justify-center shadow-sm">
-                        AR
+                        {profileInitials}
                       </div>
                       <div>
-                        <h3 className="text-on-surface text-[15px] font-bold">Ananya R</h3>
+                        <h3 className="text-on-surface text-[15px] font-bold">{profileName}</h3>
                         <p className="text-on-surface-muted text-[13px]">Backend · Trichy</p>
                       </div>
                     </div>
